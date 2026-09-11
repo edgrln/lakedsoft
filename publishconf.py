@@ -24,7 +24,7 @@ from pelicanconf import *
 SITEURL = "https://edgrln.github.io/lakedsoft"
 RELATIVE_URLS = False
 
-GTM_ID = 'GTM-ERML6E6JW9'
+GTM_ID = 'GTM-P6YFW7BQZR'
 
 FEED_ALL_ATOM = "feeds/all.atom.xml"
 CATEGORY_FEED_ATOM = "feeds/{slug}.atom.xml"
