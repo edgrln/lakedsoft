@@ -54,12 +54,12 @@ a:hover { color: var(--lk-accent-deep-hover); }
   gap: var(--space-4);
   padding: var(--space-3) 0;
 }
-.brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
+.brand { display: flex; align-items: center; gap: 14px; padding: 4px 0; text-decoration: none; color: inherit; }
 .brand:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
-.brand__mark { display: block; width: 28px; height: 28px; flex: none; border-radius: 50%; object-fit: cover; }
-.brand__text { display: flex; flex-direction: column; gap: 1px; }
-.brand__name { font-family: var(--font-heading); font-weight: 400; font-size: 20px; line-height: 1; color: var(--color-text); }
-.brand__sub { font-size: 8px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--color-muted); }
+.brand__mark { display: block; width: 32px; height: 32px; flex: none; border-radius: 50%; object-fit: cover; }
+.brand__text { display: flex; flex-direction: column; gap: 2px; }
+.brand__name { font-family: var(--font-heading); font-weight: 400; font-size: 24px; line-height: 1; color: var(--color-text); }
+.brand__sub { font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--color-muted); }
 
 .lk-nav { display: flex; align-items: center; gap: var(--space-4); }
 .lk-nav-links { display: flex; align-items: center; gap: var(--space-4); }
