@@ -1,0 +1,11 @@
+output/
+__pycache__/
+*.pyc
+
+# OS / editor cruft
+.DS_Store
+
+# local virtualenvs, if someone creates one in-repo (requirements.txt has
+# no pinned venv of its own)
+venv/
+.venv/

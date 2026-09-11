@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  {% if GTM_ID %}
+  <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      // Google Consent Mode v2 defaults: deny analytics/ads storage until
+      // the visitor accepts via the cookie banner (see
+      // theme/js/cookieconsent-config.js, which calls gtag('consent',
+      // 'update', ...) from CookieConsent's onFirstConsent/onChange).
+      gtag('consent', 'default', {
+          'ad_storage': 'denied',
+          'ad_user_data': 'denied',
+          'ad_personalization': 'denied',
+          'analytics_storage': 'denied'
+      });
+  </script>
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','{{ GTM_ID }}');</script>
+  <!-- End Google Tag Manager -->
+  {% endif %}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta data-rh="true" property="og:site_name" content="Lakedsoft">
+  <meta data-rh="true" property="og:image" content="https://lakedsoft.com/theme/brand/lakedsoft-social.png">
+  <meta data-rh="true" property="og:title" content="Lakedsoft — Data &amp; AI Engineering">
+  <meta data-rh="true" property="og:description" content="Дата- и AI-инжиниринг: надёжные пайплайны, BI и AI-решения на Google Cloud.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://lakedsoft.com/theme/brand/lakedsoft-social.png">
+  <meta name="twitter:title" content="Lakedsoft — Data &amp; AI Engineering">
+  <meta name="twitter:description" content="Дата- и AI-инжиниринг: надёжные пайплайны, BI и AI-решения на Google Cloud.">
+
+  <title>Lakedsoft — Data &amp; AI Engineering</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link rel="stylesheet" href="{{ SITEURL }}/theme/css/classical.css">
+  <link rel="stylesheet" href="{{ SITEURL }}/theme/css/landing-brand.css">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanilla-cookieconsent@3/dist/cookieconsent.css">
+
+  <style>
+    /* Cookie-consent widget re-themed to the Classical palette (paper /
+       ink / gold) instead of the old dark/green datacloudhero theme -
+       scoped to this <style> block only, same as before. */
+    :root,
+    .cc--darkmode {
+      --cc-bg: #f3f2f2;
+      --cc-primary-color: #201f1d;
+      --cc-secondary-color: #57544e;
+
+      --cc-btn-primary-bg: #201f1d;
+      --cc-btn-primary-color: #f3f2f2;
+      --cc-btn-primary-border-color: #201f1d;
+      --cc-btn-primary-hover-bg: #000000;
+      --cc-btn-primary-hover-color: #ffffff;
+      --cc-btn-primary-hover-border-color: #000000;
+
+      --cc-btn-secondary-bg: #eae9e9;
+      --cc-btn-secondary-color: #201f1d;
+      --cc-btn-secondary-border-color: #eae9e9;
+      --cc-btn-secondary-hover-bg: #dcd9d4;
+      --cc-btn-secondary-hover-color: #000000;
+      --cc-btn-secondary-hover-border-color: #dcd9d4;
+
+      --cc-toggle-on-bg: #b68235;
+      --cc-toggle-off-bg: #9b9797;
+      --cc-toggle-on-knob-bg: #ffffff;
+      --cc-toggle-off-knob-bg: #ffffff;
+
+      --cc-toggle-readonly-bg: #d7d3d3;
+      --cc-toggle-readonly-knob-bg: #ffffff;
+      --cc-toggle-readonly-knob-icon-color: #d7d3d3;
+
+      --cc-cookie-category-block-bg: #eae9e9;
+      --cc-cookie-category-block-border: #eae9e9;
+      --cc-cookie-category-block-hover-bg: #dcd9d4;
+      --cc-cookie-category-block-hover-border: #dcd9d4;
+
+      --cc-separator-border-color: #dcd9d4;
+      --cc-footer-bg: #f3f2f2;
+      --cc-footer-color: #57544e;
+      --cc-footer-border-color: #dcd9d4;
+
+      --cc-modal-border-radius: 8px;
+      --cc-btn-border-radius: 4px;
+    }
+
+    #cc-main {
+      color-scheme: light;
+    }
+
+    #cc-main .section__toggle:checked ~ .toggle__icon {
+      background: #b68235 !important;
+      box-shadow: 0 0 0 1px #b68235 !important;
+    }
+
+    #cc-main .section__toggle:checked ~ .toggle__icon .toggle__icon-on svg {
+      stroke: #b68235 !important;
+    }
+
+    #cc-main .section__toggle:not(:checked) ~ .toggle__icon {
+      background: #9b9797 !important;
+      box-shadow: 0 0 0 1px #9b9797 !important;
+    }
+
+    #cc-main .section__toggle:not(:checked) ~ .toggle__icon .toggle__icon-off svg {
+      stroke: #9b9797 !important;
+    }
+
+    #cc-main .section__toggle:checked:disabled ~ .toggle__icon {
+      background: #d7d3d3 !important;
+      box-shadow: 0 0 0 1px #d7d3d3 !important;
+    }
+
+    #cc-main .section__toggle:checked:disabled ~ .toggle__icon .toggle__icon-circle {
+      background: #ffffff !important;
+    }
+
+    #cc-main .section__toggle:checked:disabled ~ .toggle__icon svg {
+      stroke: #d7d3d3 !important;
+    }
+
+    #cc-main .cm,
+    #cc-main .pm {
+      box-shadow: var(--shadow-lg);
+    }
+
+    #cc-main .pm__section:not(:first-child) {
+      background: #eae9e9;
+      border-color: #eae9e9;
+    }
+
+    #cc-main .pm__section:first-child {
+      background: transparent;
+    }
+
+    #cc-main .pm__section--toggle {
+      background: #eae9e9;
+    }
+
+    #cc-main .pm__section--toggle .pm__section-title {
+      background: #eae9e9;
+      border-color: #eae9e9;
+    }
+
+    #cc-main .pm__section--toggle .pm__section-title:hover {
+      background: #dcd9d4;
+      border-color: #dcd9d4;
+    }
+
+    #cc-main .pm__section--expandable .pm__section-arrow {
+      background: #d7d3d3;
+    }
+
+    #cc-main .pm__close-btn {
+      background: #eae9e9;
+      border-color: #eae9e9;
+    }
+
+    #cc-main .pm__close-btn:hover {
+      background: #dcd9d4;
+      border-color: #dcd9d4;
+    }
+  </style>
+
+  <link rel="icon" type="image/svg+xml" href="{{ SITEURL }}/theme/brand/lakedsoft-favicon.svg" />
+  <link rel="alternate icon" href="{{ SITEURL }}/theme/img/favicon.ico" type="image/x-icon" />
+
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+<body
+  class="lk-page"
+  x-data="{
+    menuOpen: false,
+    showContactForm: false,
+    formData: { name: '', email: '', message: '', company: '' },
+    formStartedAt: 0,
+    submitting: false,
+    status: '',
+    error: '',
+    async submitContact(evt) {
+      const SCRIPT_URL = '/api/contact';
+      this.error = '';
+      this.status = '';
+      this.submitting = true;
+
+      try {
+        const turnstileToken = evt.target.querySelector('[name=cf-turnstile-response]')?.value || '';
+
+        const body = new URLSearchParams({
+          ...this.formData,
+          startedAt: String(this.formStartedAt),
+          turnstileToken,
+        }).toString();
+
+        const res = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+          },
+          body,
+        });
+
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok || !data.ok) {
+          throw new Error(data.error || 'Request failed');
+        }
+
+        this.formData = { name: '', email: '', message: '', company: '' };
+        this.status = 'Сообщение отправлено. Спасибо!';
+      } catch (err) {
+        console.error(err);
+        this.error = 'Что-то пошло не так. Напишите нам напрямую на почту.';
+      } finally {
+        this.submitting = false;
+        if (window.turnstile) window.turnstile.reset();
+      }
+    }
+  }"
+>
+  {% if GTM_ID %}
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ GTM_ID }}"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+  {% endif %}
+
+{{ page.content|safe }}
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    lucide.createIcons();
+  </script>
+
+  <script type="module" src="{{ SITEURL }}/theme/js/cookieconsent-config.js"></script>
+</body>
+</html>

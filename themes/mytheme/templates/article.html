@@ -1,0 +1,42 @@
+{% extends "blog_base.html" %}
+
+{% block title %}{{ article.title }} — {{ SITENAME }}{% endblock %}
+
+{% block blog_content %}
+<article class="article-single">
+    <h1 class="page-title" style="margin-bottom: var(--space-2);">{{ article.title }}</h1>
+    <p class="post-meta" style="margin-bottom: var(--space-4);">{{ article.locale_date }} · {{ (article.content|striptags|wordcount // 200) + 1 }} {{ t.min_read }}</p>
+
+    <div class="authors-row">
+        {% if article.authors %}
+            {% for a in article.authors %}
+                {% set author_name = a %}
+                {% include "partials/author_card.html" with context %}
+            {% endfor %}
+        {% elif article.author %}
+            {% set author_name = article.author %}
+            {% include "partials/author_card.html" with context %}
+        {% endif %}
+    </div>
+
+    {% include "partials/ai_actions.html" with context %}
+
+    <div class="content article-body">
+        {{ article.content }}
+    </div>
+
+    {% if article.tags %}
+    <div class="tags-row" style="margin-top: var(--space-4);">
+        {% for tag in article.tags %}
+        <a href="{{ SITEURL }}/{{ tag.url }}" class="tag-pill">{{ tag }}</a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% include "partials/cta.html" %}
+</article>
+
+<div style="margin-top: var(--space-4);">
+    <a href="{{ SITEURL }}/blog/" class="btn btn-secondary">{{ t.back_to_posts }}</a>
+</div>
+{% endblock %}

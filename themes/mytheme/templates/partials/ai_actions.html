@@ -1,0 +1,21 @@
+{# Row of "for AI/LLM tools" actions for an article: copy/view the page as
+   plain Markdown, or open it in one of the big chat assistants with a
+   prompt pre-filled. Expects `article` in context. #}
+{% set article_md_url = SITEURL + '/' + article.url|trim('/') + '.md' %}
+{% set ai_prompt = 'Read and summarize this article: ' + article_md_url %}
+<div class="ai-actions" x-data="{ open: false }" @click.outside="open = false">
+    <button type="button" class="btn btn-secondary" @click="open = !open" :aria-expanded="open">
+        <span class="js-ai-actions-label">{{ t.copy_page }}</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+    </button>
+    <div class="ai-actions-menu" x-show="open" x-cloak x-transition>
+        <button type="button" class="js-copy-markdown" data-md-url="{{ article_md_url }}" @click="open = false">
+            {{ t.copy_page_md }}
+        </button>
+        <a href="{{ article_md_url }}" target="_blank" rel="noopener">{{ t.view_as_md }}</a>
+        <div class="hr"></div>
+        <a href="https://chatgpt.com/?q={{ ai_prompt|urlencode }}" target="_blank" rel="noopener">{{ t.open_in.format(name='ChatGPT') }}</a>
+        <a href="https://claude.ai/new?q={{ ai_prompt|urlencode }}" target="_blank" rel="noopener">{{ t.open_in.format(name='Claude') }}</a>
+        <a href="https://www.perplexity.ai/search?q={{ ai_prompt|urlencode }}" target="_blank" rel="noopener">{{ t.open_in.format(name='Perplexity') }}</a>
+    </div>
+</div>

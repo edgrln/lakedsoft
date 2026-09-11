@@ -1,0 +1,346 @@
+/*
+ * Lakedsoft landing — brand layer on top of ../css/classical.css (the
+ * unmodified design-system stylesheet: tokens + .btn/.card/.nav/.dialog/
+ * .field etc.). This file only adds what's specific to the landing page
+ * itself: the .brand lockup, the dark colophon footer, hero/section
+ * layout, and small helpers — everything still reads color, font, space
+ * and radius from classical.css's --color-, --font-, --space- and
+ * --radius- variables, per design-system/readme.md ("never hard-code a hex, a font
+ * name or a px value the tokens already carry").
+ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Two brand tokens the handoff calls out that classical.css's ramp
+     doesn't carry verbatim (see README.md "Design Tokens"): the deeper
+     gold used for paragraph-size links/text (the accent itself doesn't
+     hit body-text contrast), and the dark "colophon" used for the footer
+     and the dark mark. */
+  --lk-accent-deep: #8c6228;
+  --lk-accent-deep-hover: #6d4d16;
+  --lk-colophon: #17150f;
+  --lk-colophon-text: #a9a49a;
+  --color-muted: #57544e;
+
+  /* EXPERIMENT: sans-serif headings instead of the brandbook's Cormorant
+     Garamond - overrides classical.css's --font-heading (left unmodified
+     itself) for headings/kickers/buttons only; --font-body (Lora) is
+     untouched so paragraph text is unaffected. Revert by deleting this
+     one declaration (and the @import above, and the two `.lk-kicker`/
+     `.cta-kicker` font-family lines below) to go back to Cormorant Garamond. */
+  --font-heading: 'Inter', system-ui, sans-serif;
+}
+
+.lk-page {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+}
+.lk-page a { color: var(--lk-accent-deep); text-underline-offset: 3px; }
+.lk-page a:hover { color: var(--lk-accent-deep-hover); }
+.lk-page ::selection { background: color-mix(in srgb, var(--color-accent) 30%, transparent); }
+
+.lk-container {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+}
+
+/* — header / brand lockup (README.md "1. Шапка сайта") — */
+.lk-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: color-mix(in srgb, var(--color-bg) 92%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--color-divider);
+}
+.lk-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3) 0;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 4px 0;
+  text-decoration: none;
+  color: inherit;
+}
+.brand:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.brand__mark { display: block; width: 32px; height: 32px; flex: none; border-radius: 50%; object-fit: cover; }
+.brand__text { display: flex; flex-direction: column; gap: 2px; }
+.brand__name {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: 24px;
+  line-height: 1;
+  color: var(--color-text);
+}
+.brand__sub {
+  font-family: var(--font-body);
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--color-muted, #57544e);
+}
+
+.lk-nav { display: flex; align-items: center; gap: var(--space-6); }
+.lk-nav-links { display: flex; align-items: center; gap: var(--space-6); }
+.lk-nav a {
+  font-size: 14px;
+  color: var(--color-text);
+  text-decoration: none;
+}
+.lk-nav a:hover { color: var(--color-accent); }
+.lk-nav-toggle { display: none; }
+
+.lk-mobile-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3) 0 var(--space-4);
+  border-top: 1px solid var(--color-divider);
+}
+.lk-mobile-nav a { font-size: 15px; color: var(--color-text); text-decoration: none; }
+
+@media (max-width: 860px) {
+  .lk-nav-links, .lk-nav .btn { display: none; }
+  .lk-nav-toggle {
+    display: inline-flex;
+    background: none;
+    border: 0;
+    padding: 4px;
+    color: var(--color-text);
+    cursor: pointer;
+  }
+}
+@media (min-width: 861px) {
+  .lk-mobile-nav { display: none; }
+}
+
+/* — hero — */
+.lk-hero { padding: clamp(56px, 10vw, 108px) 0 clamp(48px, 8vw, 80px); }
+.lk-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-heading); /* EXPERIMENT: was var(--font-body) - see :root above */
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent-700);
+  margin-bottom: var(--space-4);
+}
+.lk-kicker::before {
+  content: '';
+  display: inline-block;
+  width: 32px;
+  height: 1px;
+  background: var(--color-accent);
+}
+.hero-title {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: clamp(2.2rem, 5.4vw, 4rem);
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  max-width: 16ch;
+  margin: 0 0 var(--space-4);
+}
+.hero-title em {
+  font-style: italic;
+  color: var(--color-accent-700);
+}
+.lk-lede {
+  font-size: 18px;
+  line-height: 1.75;
+  color: color-mix(in srgb, var(--color-text) 78%, transparent);
+  max-width: 56ch;
+  margin: 0 0 var(--space-6);
+}
+.lk-hero-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-bottom: var(--space-8); }
+.lk-hero-actions .btn { font-size: 15px; padding: 12px 22px; }
+
+.lk-stats {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  gap: 0;
+  width: fit-content;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.lk-stat { padding: var(--space-3) var(--space-6); text-align: center; }
+.lk-stat + .lk-stat { border-left: 1px solid var(--color-divider); }
+.lk-stat-num {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: 26px;
+  color: var(--color-accent-700);
+  font-feature-settings: 'tnum';
+}
+.lk-stat-label {
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-muted, #57544e);
+  margin-top: 2px;
+}
+@media (max-width: 560px) {
+  .lk-stats { grid-template-columns: 1fr; width: 100%; }
+  .lk-stat + .lk-stat { border-left: 0; border-top: 1px solid var(--color-divider); }
+}
+
+/* — sections — */
+.lk-section { padding: clamp(48px, 8vw, 88px) 0; }
+.lk-section + .lk-section { border-top: 1px solid var(--color-divider); }
+.lk-section-head { max-width: 60ch; margin-bottom: var(--space-8); }
+.lk-section-title { font-size: clamp(1.7rem, 3vw, 2.2rem); margin-bottom: var(--space-3); }
+.lk-section-lede { font-size: 16px; line-height: 1.75; color: color-mix(in srgb, var(--color-text) 78%, transparent); }
+
+/* — services — */
+.lk-services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-4);
+}
+.lk-service-card { padding: var(--space-4); gap: var(--space-3); }
+.lk-service-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  color: var(--color-accent-700);
+}
+.lk-service-icon svg { width: 19px; height: 19px; }
+.lk-service-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; }
+
+/* — stack — */
+.lk-stack-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--space-6);
+}
+.lk-stack-label {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-muted, #57544e);
+  margin-bottom: var(--space-2);
+}
+.lk-stack-items { display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+
+/* — process — */
+.lk-process-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-6);
+}
+.lk-step-num {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: 44px;
+  line-height: 1;
+  color: color-mix(in srgb, var(--color-accent) 35%, transparent);
+  font-feature-settings: 'tnum';
+  margin-bottom: var(--space-2);
+}
+.lk-process-grid h3 { margin-bottom: var(--space-2); }
+.lk-process-grid p { font-size: 14px; line-height: 1.75; color: color-mix(in srgb, var(--color-text) 78%, transparent); }
+
+/* — CTA panel — */
+.lk-cta-panel {
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-lg);
+  padding: clamp(32px, 6vw, 64px);
+  text-align: center;
+}
+.lk-cta-panel .hero-title { max-width: none; margin-left: auto; margin-right: auto; }
+.lk-cta-panel .lk-lede { margin-left: auto; margin-right: auto; text-align: center; }
+.lk-cta-footnote {
+  margin-top: var(--space-4);
+  font-size: 13px;
+  color: var(--color-muted, #57544e);
+}
+
+/* — FAQ (native <details>, no JS) — */
+.lk-faq { display: flex; flex-direction: column; }
+.lk-faq details {
+  border-top: 1px solid var(--color-divider);
+  padding: var(--space-3) 0;
+}
+.lk-faq details:last-child { border-bottom: 1px solid var(--color-divider); }
+.lk-faq summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 17px;
+}
+.lk-faq summary::-webkit-details-marker { display: none; }
+.lk-faq summary::after {
+  content: '+';
+  flex: none;
+  font-family: var(--font-heading);
+  font-size: 22px;
+  color: var(--color-accent);
+  transition: transform 0.2s ease;
+}
+.lk-faq details[open] summary::after { transform: rotate(45deg); }
+.lk-faq summary:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.lk-faq p {
+  margin: var(--space-3) 0 0;
+  font-size: 15px;
+  line-height: 1.75;
+  color: color-mix(in srgb, var(--color-text) 78%, transparent);
+  max-width: 68ch;
+}
+
+/* — dialog form — */
+.dialog-backdrop { z-index: 60; }
+.lk-field { margin-bottom: var(--space-3); }
+.lk-honeypot { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+
+/* — footer / colophon (README.md "2. Подвал") — */
+.lk-footer {
+  background: var(--lk-colophon);
+  color: var(--lk-colophon-text);
+  margin-top: 0;
+  padding: 56px 0;
+}
+.lk-footer-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+.lk-footer-mark { display: block; width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
+.lk-footer-copy { font-size: 12px; text-align: center; line-height: 1.6; }
+.lk-footer-links { display: flex; flex-wrap: wrap; gap: var(--space-4); justify-content: center; }
+.lk-footer-links a, .lk-footer-links button {
+  font-size: 12px;
+  color: var(--lk-colophon-text);
+  text-decoration: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+.lk-footer-links a:hover, .lk-footer-links button:hover { color: var(--color-accent); }
+.lk-footer :focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+[x-cloak] { display: none !important; }

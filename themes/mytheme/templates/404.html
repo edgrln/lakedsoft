@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t.page_not_found }} — {{ SITENAME }}{% endblock %}
+
+{% block content %}
+<div class="error-page">
+    <div class="error-code">404</div>
+    <p style="font-size: 17px; color: var(--color-muted); margin-bottom: var(--space-4);">{{ t.page_not_found }}</p>
+    <a href="{{ SITEURL }}/" class="btn btn-primary">{{ t.go_home }}</a>
+</div>
+{% endblock %}

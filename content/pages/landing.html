@@ -1,0 +1,443 @@
+<head>
+<title>Lakedsoft — Data & AI Engineering</title>
+<meta name="save_as" content="index.html">
+<meta name="url" content="">
+<meta name="template" content="landing">
+<meta name="status" content="published">
+<meta name="lang" content="ru">
+<meta name="slug" content="landing">
+</head>
+<body>
+  <!-- HEADER -->
+  <header class="lk-header">
+    <div class="lk-container lk-header-inner">
+      <a href="/" class="brand">
+        <img class="brand__mark" src="/theme/brand/lakedsoft-mark.svg" alt="" width="32" height="32" />
+        <span class="brand__text">
+          <span class="brand__name">Lakedsoft</span>
+          <span class="brand__sub">Systems &amp; software</span>
+        </span>
+      </a>
+
+      <nav class="lk-nav">
+        <div class="lk-nav-links">
+          <a href="#services">Услуги</a>
+          <a href="#stack">Стек</a>
+          <a href="#process">Процесс</a>
+          <a href="#contact">Контакты</a>
+          <a href="/blog/">Блог</a>
+        </div>
+        <a href="#contact" class="btn btn-primary">Написать нам</a>
+
+        <button
+          type="button"
+          class="lk-nav-toggle"
+          @click="menuOpen = !menuOpen"
+          :aria-expanded="menuOpen"
+          aria-label="Меню"
+        >
+          <svg x-show="!menuOpen" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+          <svg x-show="menuOpen" x-cloak xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </nav>
+    </div>
+
+    <div class="lk-container">
+      <div
+        x-show="menuOpen"
+        x-cloak
+        x-transition
+        class="lk-mobile-nav"
+      >
+        <a href="#services" @click="menuOpen=false">Услуги</a>
+        <a href="#stack" @click="menuOpen=false">Стек</a>
+        <a href="#process" @click="menuOpen=false">Процесс</a>
+        <a href="#contact" @click="menuOpen=false">Контакты</a>
+        <a href="/blog/">Блог</a>
+        <a href="#contact" @click="menuOpen=false" class="btn btn-primary btn-block" style="width:fit-content; margin-top: 4px;">Написать нам</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="lk-hero">
+      <div class="lk-container">
+        <div class="lk-kicker">Дата- и AI-инжиниринг</div>
+
+        <h1 class="hero-title">Надёжные data- и AI-платформы <em>на Google&nbsp;Cloud</em></h1>
+
+        <p class="lk-lede">
+          Проектируем и внедряем дата-пайплайны, BI-отчётность и AI-решения,
+          которые растут вместе с вашим бизнесом.
+        </p>
+
+        <div class="lk-hero-actions">
+          <a href="#contact" class="btn btn-primary">Запросить обзор платформы →</a>
+          <a href="#services" class="btn btn-secondary">Смотреть услуги</a>
+        </div>
+
+        <div class="lk-stats">
+          <div class="lk-stat">
+            <div class="lk-stat-num">50+</div>
+            <div class="lk-stat-label">проектов</div>
+          </div>
+          <div class="lk-stat">
+            <div class="lk-stat-num">×10</div>
+            <div class="lk-stat-label">ускорение пайплайнов</div>
+          </div>
+          <div class="lk-stat">
+            <div class="lk-stat-num">99.9%</div>
+            <div class="lk-stat-label">аптайм системы</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SERVICES -->
+    <section id="services" class="lk-section">
+      <div class="lk-container">
+        <div class="lk-section-head">
+          <div class="lk-kicker">01 / Услуги</div>
+          <h2 class="lk-section-title">Что мы делаем</h2>
+          <p class="lk-section-lede">
+            Полный спектр инженерных услуг — от сырых данных до AI-продуктов в продакшне.
+          </p>
+        </div>
+
+        <div class="lk-services-grid">
+          <div class="card lk-service-card">
+            <div class="lk-service-icon"><i data-lucide="database"></i></div>
+            <div class="card-title">Дата-инжиниринг</div>
+            <p class="card-body">
+              Проектируем ETL/ELT-пайплайны, архитектуру Data Lake и Data Warehouse.
+              Надёжная доставка данных на любом масштабе.
+            </p>
+            <div class="lk-service-tags">
+              <span class="tag tag-outline">Пайплайны</span>
+              <span class="tag tag-outline">Архитектура</span>
+              <span class="tag tag-outline">Автоматизация</span>
+              <span class="tag tag-outline">Качество данных</span>
+            </div>
+          </div>
+
+          <div class="card lk-service-card">
+            <div class="lk-service-icon"><i data-lucide="brain-circuit"></i></div>
+            <div class="card-title">GenAI</div>
+            <p class="card-body">
+              Разрабатываем и внедряем LLM-приложения, RAG-системы и AI-агентов
+              в продакшн-окружения.
+            </p>
+            <div class="lk-service-tags">
+              <span class="tag tag-outline">LLM-приложения</span>
+              <span class="tag tag-outline">RAG</span>
+              <span class="tag tag-outline">AI-агенты</span>
+              <span class="tag tag-outline">MCP-серверы</span>
+            </div>
+          </div>
+
+          <div class="card lk-service-card">
+            <div class="lk-service-icon"><i data-lucide="cloud-cog"></i></div>
+            <div class="card-title">Облачная дата-платформа</div>
+            <p class="card-body">
+              Строим современные облачные дата-платформы на Google Cloud
+              с нуля или переносим существующие.
+            </p>
+            <div class="lk-service-tags">
+              <span class="tag tag-outline">Настройка облака</span>
+              <span class="tag tag-outline">Миграция</span>
+              <span class="tag tag-outline">Инфраструктура</span>
+              <span class="tag tag-outline">Оптимизация</span>
+            </div>
+          </div>
+
+          <div class="card lk-service-card">
+            <div class="lk-service-icon"><i data-lucide="chart-column-increasing"></i></div>
+            <div class="card-title">Аналитика и BI-инжиниринг</div>
+            <p class="card-body">
+              Семантический слой, моделирование данных, метрики и дашборды.
+              Ваши данные — понятны каждому в команде.
+            </p>
+            <div class="lk-service-tags">
+              <span class="tag tag-outline">Дашборды</span>
+              <span class="tag tag-outline">Метрики</span>
+              <span class="tag tag-outline">Семантический слой</span>
+              <span class="tag tag-outline">Self-Service BI</span>
+            </div>
+          </div>
+
+          <div class="card lk-service-card">
+            <div class="lk-service-icon"><i data-lucide="compass"></i></div>
+            <div class="card-title">Консалтинг для дата-команд</div>
+            <p class="card-body">
+              Помогаем выстроить, масштабировать и согласовать дата-команду с
+              целями бизнеса: роли, модели владения, зрелость процессов.
+            </p>
+            <div class="lk-service-tags">
+              <span class="tag tag-outline">Стратегия</span>
+              <span class="tag tag-outline">Структура команды</span>
+              <span class="tag tag-outline">Модели владения</span>
+              <span class="tag tag-outline">Оценка зрелости</span>
+            </div>
+          </div>
+
+          <div class="card lk-service-card">
+            <div class="lk-service-icon"><i data-lucide="presentation"></i></div>
+            <div class="card-title">Обучение команд</div>
+            <p class="card-body">
+              Практические воркшопы и обмен знаниями для дата-, аналитических
+              и AI-команд: инжиниринг, облако, BI и AI-инструменты.
+            </p>
+            <div class="lk-service-tags">
+              <span class="tag tag-outline">Воркшопы</span>
+              <span class="tag tag-outline">Тренинги</span>
+              <span class="tag tag-outline">Обмен опытом</span>
+              <span class="tag tag-outline">Практика</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STACK -->
+    <section id="stack" class="lk-section">
+      <div class="lk-container">
+        <div class="lk-section-head">
+          <div class="lk-kicker">02 / Стек</div>
+          <h2 class="lk-section-title">Наш стек</h2>
+        </div>
+
+        <div class="lk-stack-grid">
+          <div>
+            <div class="lk-stack-label">Хранение</div>
+            <div class="lk-stack-items">
+              <span class="tag tag-outline">BigQuery</span>
+              <span class="tag tag-outline">Storage</span>
+              <span class="tag tag-outline">ClickHouse</span>
+              <span class="tag tag-outline">PostgreSQL</span>
+            </div>
+          </div>
+          <div>
+            <div class="lk-stack-label">Оркестрация</div>
+            <div class="lk-stack-items">
+              <span class="tag tag-outline">Apache Airflow</span>
+              <span class="tag tag-outline">dbt</span>
+            </div>
+          </div>
+          <div>
+            <div class="lk-stack-label">Gen AI</div>
+            <div class="lk-stack-items">
+              <span class="tag tag-outline">LangChain</span>
+              <span class="tag tag-outline">LiteLLM</span>
+              <span class="tag tag-outline">Django</span>
+              <span class="tag tag-outline">Hugging Face</span>
+              <span class="tag tag-outline">Gemini API</span>
+              <span class="tag tag-outline">OpenAI API</span>
+            </div>
+          </div>
+          <div>
+            <div class="lk-stack-label">Инфраструктура</div>
+            <div class="lk-stack-items">
+              <span class="tag tag-outline">Terraform</span>
+              <span class="tag tag-outline">Docker</span>
+              <span class="tag tag-outline">GitHub Actions</span>
+              <span class="tag tag-outline">Google Cloud Platform</span>
+            </div>
+          </div>
+          <div>
+            <div class="lk-stack-label">BI</div>
+            <div class="lk-stack-items">
+              <span class="tag tag-outline">Qlik Sense</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROCESS -->
+    <section id="process" class="lk-section">
+      <div class="lk-container">
+        <div class="lk-section-head">
+          <div class="lk-kicker">03 / Процесс</div>
+          <h2 class="lk-section-title">Как мы работаем</h2>
+          <p class="lk-section-lede">
+            Небольшие, чётко очерченные проекты с конкретным техническим результатом:
+            выводы, рекомендации, процесс релизов, чек-листы и помощь с внедрением.
+          </p>
+        </div>
+
+        <div class="lk-process-grid">
+          <div>
+            <div class="lk-step-num">01</div>
+            <h3>Обзор</h3>
+            <p>Архитектура, пайплайны, облачные ресурсы, процесс деплоя и текущие узкие места команды.</p>
+          </div>
+          <div>
+            <div class="lk-step-num">02</div>
+            <h3>Диагностика</h3>
+            <p>Находим пробелы в надёжности, риски релизов, узкие места производительности и лишние облачные расходы.</p>
+          </div>
+          <div>
+            <div class="lk-step-num">03</div>
+            <h3>Дорожная карта</h3>
+            <p>Приоритизированные шаги, целевой процесс деплоя, рекомендации по платформе и быстрые победы.</p>
+          </div>
+          <div>
+            <div class="lk-step-num">04</div>
+            <h3>Поддержка</h3>
+            <p>Асинхронный консалтинг, технические ревью, помощь с внедрением и документацией.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section id="contact" class="lk-section">
+      <div class="lk-container">
+        <div class="lk-cta-panel">
+          <div class="lk-kicker" style="justify-content:center;">Готовы начать?</div>
+          <h2 class="hero-title">Построим что-то <em>стоящее</em></h2>
+          <p class="lk-lede">
+            Расскажите о задаче вашей дата-платформы — пайплайны, CI/CD, надёжность,
+            архитектура или облачные расходы. Это будет предметный технический разговор,
+            а не продажа.
+          </p>
+
+          <div class="lk-hero-actions" style="justify-content:center; margin-bottom:0;">
+            <button type="button" @click="showContactForm = true; formStartedAt = Date.now()" class="btn btn-primary">
+              Написать нам ✉
+            </button>
+          </div>
+
+          <div class="lk-cta-footnote">
+            <a href="mailto:info@lakedsoft.com">info@lakedsoft.com</a>
+            · Избранные консультационные проекты · Удалённо по Европе
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT MODAL -->
+    <div
+      x-show="showContactForm"
+      x-cloak
+      @keydown.escape.window="showContactForm = false"
+      class="dialog-backdrop"
+    >
+      <div
+        @click.away="showContactForm = false"
+        class="dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="contact-dialog-title"
+      >
+        <div style="display:flex; align-items:flex-start; justify-content:space-between; gap: var(--space-3);">
+          <div>
+            <div class="lk-kicker" style="margin-bottom:6px;">Контакты</div>
+            <div class="dialog-title" id="contact-dialog-title">Написать нам</div>
+          </div>
+          <button type="button" @click="showContactForm = false" class="btn btn-icon btn-ghost" aria-label="Закрыть">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          </button>
+        </div>
+
+        <form @submit.prevent="submitContact($event)">
+          <!-- Honeypot: hidden from real users, bots that auto-fill every input tend to fill it -->
+          <input
+            type="text"
+            name="company"
+            x-model="formData.company"
+            tabindex="-1"
+            autocomplete="off"
+            aria-hidden="true"
+            class="lk-honeypot"
+          />
+
+          <div class="lk-field field">
+            <label for="lk-name">Имя</label>
+            <input class="input" id="lk-name" name="name" x-model="formData.name" type="text" required />
+          </div>
+
+          <div class="lk-field field">
+            <label for="lk-email">Email</label>
+            <input class="input" id="lk-email" name="email" x-model="formData.email" type="email" required />
+          </div>
+
+          <div class="lk-field field">
+            <label for="lk-message">Сообщение</label>
+            <textarea class="input" id="lk-message" name="message" x-model="formData.message" required rows="5"></textarea>
+          </div>
+
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAAEM7muzBPUFiEYFd" data-theme="light"></div>
+
+          <button type="submit" :disabled="submitting" class="btn btn-primary btn-block">
+            <span x-show="!submitting">Отправить</span>
+            <span x-show="submitting" x-cloak>Отправка…</span>
+          </button>
+
+          <p x-show="status" x-text="status" x-cloak style="color:#3a6b3a; font-size:13px; margin-top: var(--space-2);"></p>
+          <p x-show="error" x-text="error" x-cloak style="color:#a3372f; font-size:13px; margin-top: var(--space-2);"></p>
+        </form>
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <section class="lk-section">
+      <div class="lk-container" style="max-width: 760px;">
+        <div class="lk-section-head">
+          <div class="lk-kicker">04 / Вопросы</div>
+          <h2 class="lk-section-title">Частые вопросы</h2>
+        </div>
+
+        <div class="lk-faq">
+          <details>
+            <summary>Вы берёте проекты на полную занятость?</summary>
+            <p>Я фокусируюсь на отобранных консалтинговых и инженерных проектах с чёткими вехами и техническим результатом.</p>
+          </details>
+          <details>
+            <summary>Вы работаете с Azure, Google Cloud или AWS?</summary>
+            <p>Основной фокус — дата-платформы на Google Cloud: пайплайны, архитектура хранилища и озера данных, CI/CD, надёжность и расходы.</p>
+          </details>
+          <details>
+            <summary>Что входит в обзор платформы?</summary>
+            <p>Обзор архитектуры, оценка пайплайнов и процесса релизов, пробелы в мониторинге, риски по стоимости и производительности, практическая дорожная карта улучшений.</p>
+          </details>
+          <details>
+            <summary>Можно ли помочь без замены нашего стека?</summary>
+            <p>Да. Обычно цель — стабилизировать и улучшить существующие системы, а не переписывать всё с нуля.</p>
+          </details>
+          <details>
+            <summary>Вы работаете удалённо?</summary>
+            <p>Да. Удалённо по Европе, с асинхронной коммуникацией и запланированными созвонами.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="lk-footer">
+    <div class="lk-container lk-footer-inner">
+      <img class="lk-footer-mark" src="/theme/brand/lakedsoft-mark-dark.svg" alt="Lakedsoft" width="30" height="30" />
+
+      <div class="lk-footer-copy">
+        <div>© 2026 Lakedsoft.</div>
+        <div>Дата- и AI-инжиниринг.</div>
+        <div>Работаем из Франции 🇫🇷</div>
+      </div>
+
+      <div class="lk-footer-links">
+        <a href="#services">Услуги</a>
+        <a href="#stack">Стек</a>
+        <a href="#contact">Контакты</a>
+        <a href="/blog/">Блог</a>
+        <a href="/blog/cookie-policy/">Cookie Policy</a>
+        <button type="button" data-cc="show-preferencesModal">Настройки cookie</button>
+      </div>
+    </div>
+  </footer>
+</body>

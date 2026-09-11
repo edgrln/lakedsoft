@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="64" viewBox="0 0 300 64" fill="none" stroke-linecap="round">
+  <g transform="translate(3 3)">
+    <circle cx="29" cy="29" r="28" stroke="#b68235" stroke-width="1.25"></circle>
+    <path d="M6 34 h46" stroke="#b68235" stroke-width="1.25"></path>
+    <path d="M9 40 h12 M25 40 h9 M38 40 h11" stroke="#b68235" stroke-width="1.25" stroke-opacity="0.55"></path>
+    <path d="M18 34 l11 -17 l11 17" stroke="#201f1d" stroke-width="1.25"></path>
+  </g>
+  <text x="82" y="36" font-family="Cormorant Garamond, Garamond, serif" font-size="40" fill="#201f1d">Lakedsoft</text>
+  <text x="83" y="52" font-family="Lora, Georgia, serif" font-size="9" letter-spacing="2.7" fill="#57544e">SYSTEMS &amp; SOFTWARE</text>
+</svg>

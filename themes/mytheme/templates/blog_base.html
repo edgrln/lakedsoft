@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="blog-layout">
+    <aside>
+        <div class="sidebar-sticky">
+            <div class="sidebar-heading">{{ t.all_posts }}</div>
+            {% set articles_by_year = articles|groupby('date.year')|reverse %}
+            {% for year, year_articles in articles_by_year %}
+            <div class="sidebar-year">{{ year }}</div>
+            <ul class="sidebar-list">
+                {% for post in year_articles|sort(attribute='date', reverse=True) %}
+                <li>
+                    <a href="{{ SITEURL }}/{{ post.url }}" class="sidebar-link {% if article is defined and post == article %}active{% endif %}">
+                        {{ post.title }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% endfor %}
+        </div>
+    </aside>
+    <div class="content-wrap">
+        {% block blog_content %}{% endblock %}
+    </div>
+</div>
+{% endblock %}

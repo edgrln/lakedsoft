@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 58 58" fill="none" stroke-linecap="round">
+  <!-- Opaque paper backing behind the ring - at favicon size, a fully
+       transparent interior shows through as whatever color the browser's
+       own tab/toolbar chrome happens to be (can look like a stray dark
+       blob on a dark browser theme), so this one instance fills the disk
+       (not the ring stroke itself - still lives by its outline). -->
+  <circle cx="29" cy="29" r="27" fill="#f3f2f2"></circle>
+  <circle cx="29" cy="29" r="27" stroke="#b68235" stroke-width="2.6"></circle>
+  <path d="M6 34 h46" stroke="#b68235" stroke-width="2.6"></path>
+  <path d="M18 34 l11 -17 l11 17" stroke="#201f1d" stroke-width="2.6"></path>
+</svg>

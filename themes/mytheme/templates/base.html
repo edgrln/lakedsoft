@@ -1,0 +1,438 @@
+{# Single-language site (Russian) - see UI_STRINGS in pelicanconf.py. #}
+{% set t = UI_STRINGS %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <!-- Cookie consent (vanilla-cookieconsent) - loaded before GTM so
+         Google Consent Mode defaults are set before any tag can fire. -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanilla-cookieconsent@3/dist/cookieconsent.css">
+    {% if GTM_ID %}
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        // Google Consent Mode v2 defaults: deny analytics/ads storage until
+        // the visitor actually accepts via the cookie banner (see
+        // theme/js/cookieconsent-config.js, which calls gtag('consent',
+        // 'update', ...) from CookieConsent's onFirstConsent/onChange).
+        gtag('consent', 'default', {
+            'ad_storage': 'denied',
+            'ad_user_data': 'denied',
+            'ad_personalization': 'denied',
+            'analytics_storage': 'denied'
+        });
+    </script>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','{{ GTM_ID }}');</script>
+    <!-- End Google Tag Manager -->
+    {% endif %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{{ SITENAME }}{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    {# Social-share preview (og:image etc.): on an article page, use the
+       first <img> found in the article's own body (see `first_image` in
+       pelicanconf.py); otherwise - no image in that article, or this is a
+       non-article page (the /blog/ index, tags, categories, authors,
+       archives, a plain Page like Cookie Policy, 404, ...) - fall back to
+       the brand social card (same one the landing page uses). #}
+    {% set social_image = SITEURL + '/theme/brand/lakedsoft-social.png' %}
+    {% if article is defined %}
+        {% set og_type = 'article' %}
+        {% set page_title = article.title|striptags %}
+        {% set page_description = article.summary|striptags|truncate(200) %}
+        {% set page_image = article.content|first_image(SITEURL) or social_image %}
+        {% set canonical_url = SITEURL + '/' + article.url %}
+    {% elif page is defined %}
+        {% set og_type = 'website' %}
+        {% set page_title = page.title|striptags %}
+        {% set page_description = SITE_DESCRIPTION %}
+        {% set page_image = social_image %}
+        {% set canonical_url = SITEURL + '/' + page.url %}
+    {% else %}
+        {% set og_type = 'website' %}
+        {% set page_title = SITENAME %}
+        {% set page_description = SITE_DESCRIPTION %}
+        {% set page_image = social_image %}
+        {% set canonical_url = SITEURL + '/blog/' %}
+    {% endif %}
+    <meta name="description" content="{{ page_description }}">
+    <meta property="og:site_name" content="{{ SITENAME }}">
+    <meta property="og:type" content="{{ og_type }}">
+    <meta property="og:title" content="{{ page_title }}">
+    <meta property="og:description" content="{{ page_description }}">
+    <meta property="og:image" content="{{ page_image }}">
+    <meta property="og:url" content="{{ canonical_url }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ page_title }}">
+    <meta name="twitter:description" content="{{ page_description }}">
+    <meta name="twitter:image" content="{{ page_image }}">
+
+    <link rel="stylesheet" href="{{ SITEURL }}/theme/css/classical.css">
+    <link rel="stylesheet" href="{{ SITEURL }}/theme/css/blog.css">
+
+    <style>
+        /* Cookie-consent widget re-themed to the Classical palette (paper /
+           ink / gold), same tokens as landing.html's copy of this block. */
+        :root, .cc--darkmode {
+            --cc-bg: #f3f2f2;
+            --cc-primary-color: #201f1d;
+            --cc-secondary-color: #57544e;
+            --cc-btn-primary-bg: #201f1d;
+            --cc-btn-primary-color: #f3f2f2;
+            --cc-btn-primary-border-color: #201f1d;
+            --cc-btn-primary-hover-bg: #000000;
+            --cc-btn-primary-hover-color: #ffffff;
+            --cc-btn-primary-hover-border-color: #000000;
+            --cc-btn-secondary-bg: #eae9e9;
+            --cc-btn-secondary-color: #201f1d;
+            --cc-btn-secondary-border-color: #eae9e9;
+            --cc-btn-secondary-hover-bg: #dcd9d4;
+            --cc-btn-secondary-hover-color: #000000;
+            --cc-btn-secondary-hover-border-color: #dcd9d4;
+            --cc-toggle-on-bg: #b68235;
+            --cc-toggle-off-bg: #9b9797;
+            --cc-toggle-on-knob-bg: #ffffff;
+            --cc-toggle-off-knob-bg: #ffffff;
+            --cc-toggle-readonly-bg: #d7d3d3;
+            --cc-toggle-readonly-knob-bg: #ffffff;
+            --cc-toggle-readonly-knob-icon-color: #d7d3d3;
+            --cc-cookie-category-block-bg: #eae9e9;
+            --cc-cookie-category-block-border: #eae9e9;
+            --cc-cookie-category-block-hover-bg: #dcd9d4;
+            --cc-cookie-category-block-hover-border: #dcd9d4;
+            --cc-separator-border-color: #dcd9d4;
+            --cc-footer-bg: #f3f2f2;
+            --cc-footer-color: #57544e;
+            --cc-footer-border-color: #dcd9d4;
+            --cc-modal-border-radius: 8px;
+            --cc-btn-border-radius: 4px;
+        }
+        #cc-main { color-scheme: light; }
+        #cc-main .section__toggle:checked ~ .toggle__icon { background: #b68235 !important; box-shadow: 0 0 0 1px #b68235 !important; }
+        #cc-main .section__toggle:checked ~ .toggle__icon .toggle__icon-on svg { stroke: #b68235 !important; }
+        #cc-main .section__toggle:not(:checked) ~ .toggle__icon { background: #9b9797 !important; box-shadow: 0 0 0 1px #9b9797 !important; }
+        #cc-main .section__toggle:not(:checked) ~ .toggle__icon .toggle__icon-off svg { stroke: #9b9797 !important; }
+        #cc-main .section__toggle:checked:disabled ~ .toggle__icon { background: #d7d3d3 !important; box-shadow: 0 0 0 1px #d7d3d3 !important; }
+        #cc-main .section__toggle:checked:disabled ~ .toggle__icon .toggle__icon-circle { background: #ffffff !important; }
+        #cc-main .section__toggle:checked:disabled ~ .toggle__icon svg { stroke: #d7d3d3 !important; }
+        #cc-main .cm, #cc-main .pm { box-shadow: var(--shadow-lg); }
+        #cc-main .pm__section:not(:first-child) { background: #eae9e9; border-color: #eae9e9; }
+        #cc-main .pm__section:first-child { background: transparent; }
+        #cc-main .pm__section--toggle { background: #eae9e9; }
+        #cc-main .pm__section--toggle .pm__section-title { background: #eae9e9; border-color: #eae9e9; }
+        #cc-main .pm__section--toggle .pm__section-title:hover { background: #dcd9d4; border-color: #dcd9d4; }
+        #cc-main .pm__section--expandable .pm__section-arrow { background: #d7d3d3; }
+        #cc-main .pm__close-btn { background: #eae9e9; border-color: #eae9e9; }
+        #cc-main .pm__close-btn:hover { background: #dcd9d4; border-color: #dcd9d4; }
+    </style>
+
+    <link rel="icon" type="image/svg+xml" href="{{ SITEURL }}/theme/brand/lakedsoft-favicon.svg">
+    <link rel="alternate icon" href="{{ SITEURL }}/theme/img/favicon.ico">
+
+    <script>
+        function siteSearch() {
+            return {
+                query: '',
+                open: false,
+                results: [],
+                index: [],
+                selected: 0,
+                showAll: false,
+                init() {
+                    fetch('{{ SITEURL }}/blog/search-index.json')
+                        .then((r) => r.json())
+                        .then((data) => { this.index = data; })
+                        .catch(() => { this.index = []; });
+                },
+                search() {
+                    const q = this.query.trim().toLowerCase();
+                    this.open = q.length > 0;
+                    this.selected = 0;
+                    this.showAll = false;
+                    if (!q) { this.results = []; return; }
+                    this.results = this.index.filter((item) =>
+                        item.title.toLowerCase().includes(q) || (item.content || item.summary).toLowerCase().includes(q)
+                    );
+                },
+                get visibleResults() {
+                    return this.showAll ? this.results : this.results.slice(0, 6);
+                },
+                clear() {
+                    this.query = '';
+                    this.results = [];
+                    this.open = false;
+                },
+                matchType(item) {
+                    const q = this.query.trim().toLowerCase();
+                    return item.title.toLowerCase().includes(q) ? 'title' : 'content';
+                },
+                escapeHtml(str) {
+                    return str.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+                },
+                highlight(text) {
+                    const q = this.query.trim();
+                    const escaped = this.escapeHtml(text);
+                    if (!q) return escaped;
+                    const escapedQ = this.escapeHtml(q).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    return escaped.replace(new RegExp('(' + escapedQ + ')', 'ig'), '<strong>$1</strong>');
+                },
+                move(delta) {
+                    if (!this.visibleResults.length) return;
+                    const max = this.visibleResults.length - 1;
+                    this.selected = Math.min(max, Math.max(0, this.selected + delta));
+                },
+                go() {
+                    const item = this.visibleResults[this.selected];
+                    if (item) window.location.href = item.url;
+                },
+            };
+        }
+
+        function infiniteScroll(nextUrl) {
+            return {
+                nextUrl: nextUrl || null,
+                loading: false,
+                init() {
+                    if (!this.nextUrl) return;
+                    const observer = new IntersectionObserver((entries) => {
+                        if (entries[0].isIntersecting) this.loadMore();
+                    });
+                    observer.observe(this.$refs.sentinel);
+                },
+                async loadMore() {
+                    if (this.loading || !this.nextUrl) return;
+                    this.loading = true;
+                    try {
+                        const res = await fetch(this.nextUrl);
+                        const html = await res.text();
+                        const doc = new DOMParser().parseFromString(html, 'text/html');
+                        const newPosts = doc.querySelectorAll('#post-list > article');
+                        const list = this.$refs.postList;
+                        newPosts.forEach((post) => list.appendChild(post));
+                        const pagination = doc.getElementById('pagination-data');
+                        this.nextUrl = pagination ? (pagination.dataset.nextUrl || null) : null;
+                    } catch (e) {
+                        this.nextUrl = null;
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+            };
+        }
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    {% if FEED_ALL_ATOM %}
+    <link href="{{ FEED_DOMAIN }}/{{ FEED_ALL_ATOM }}" type="application/atom+xml" rel="alternate" title="{{ SITENAME }} Full Atom Feed">
+    {% endif %}
+</head>
+<body class="lk-page">
+    {% if GTM_ID %}
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ GTM_ID }}"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    {% endif %}
+
+    <header class="lk-header" x-data="{ menuOpen: false }">
+        <div class="lk-container lk-header-inner">
+            <a href="{{ SITEURL }}/" class="brand">
+                <img class="brand__mark" src="{{ SITEURL }}/theme/brand/lakedsoft-mark.svg" alt="" width="28" height="28">
+                <span class="brand__text">
+                    <span class="brand__name">{{ SITENAME }}</span>
+                    <span class="brand__sub">Systems &amp; software</span>
+                </span>
+            </a>
+
+            <nav class="lk-nav">
+                <div class="lk-nav-links">
+                    <a href="{{ SITEURL }}/blog/">{{ t.blog_nav }}</a>
+                    {% for title, link in MENUITEMS %}
+                    <a href="{{ link }}">{{ title }}</a>
+                    {% endfor %}
+                    {# Opt-in, not opt-out: a Page only shows here if it sets
+                       `Nav: true` in its metadata - see CLAUDE.md. #}
+                    {% for page in pages if page.metadata.get('nav') == 'true' %}
+                    <a href="{{ SITEURL }}/{{ page.url }}">{{ page.title }}</a>
+                    {% endfor %}
+                </div>
+
+                <div class="search-box" x-data="siteSearch()" x-init="init()" @click.outside="open = false">
+                    <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+                    <input
+                        type="search"
+                        class="search-input"
+                        placeholder="{{ t.search_placeholder }}"
+                        x-model="query"
+                        @input="search()"
+                        @focus="open = query.length > 0"
+                        @keydown.down.prevent="move(1)"
+                        @keydown.up.prevent="move(-1)"
+                        @keydown.enter.prevent="go()"
+                        @keydown.escape="clear()"
+                    >
+                    <button type="button" class="search-clear" x-show="query.length > 0" x-cloak @click="clear()" aria-label="Clear search">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                    </button>
+                    <div class="search-results" x-show="open && results.length" x-cloak>
+                        <div class="search-result-list">
+                            <template x-for="(r, i) in visibleResults" :key="r.url">
+                                <a :href="r.url"
+                                   class="search-result-item"
+                                   :class="{ 'is-selected': i === selected }"
+                                   @mouseenter="selected = i">
+                                    <span class="search-result-icon" x-text="matchType(r) === 'title' ? '#' : '≡'"></span>
+                                    <span class="search-result-text">
+                                        <span class="search-result-title" x-html="highlight(r.title)"></span>
+                                        <span class="search-result-summary" x-text="r.summary"></span>
+                                    </span>
+                                    <svg class="search-result-enter" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6v6a2 2 0 0 1-2 2H6M10 10l-4 4 4 4"/></svg>
+                                </a>
+                            </template>
+                        </div>
+                        <template x-if="results.length > visibleResults.length">
+                            <a href="#" class="search-see-all" @click.prevent="showAll = true">
+                                {{ t.see_all_results }} (<span x-text="results.length"></span>)
+                            </a>
+                        </template>
+                    </div>
+                    <div class="search-results" x-show="open && query.length > 0 && results.length === 0" x-cloak>
+                        <div class="search-no-results">{{ t.no_results }}</div>
+                    </div>
+                </div>
+
+                <button type="button" class="lk-nav-toggle" @click="menuOpen = !menuOpen" :aria-expanded="menuOpen" aria-label="Меню">
+                    <svg x-show="!menuOpen" xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    <svg x-show="menuOpen" x-cloak xmlns="http://www.w3.org/2000/svg" width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </nav>
+        </div>
+
+        <div class="lk-container">
+            <div x-show="menuOpen" x-cloak x-transition class="lk-mobile-nav">
+                <div class="search-box" x-data="siteSearch()" x-init="init()" @click.outside="open = false">
+                    <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+                    <input
+                        type="search"
+                        class="search-input"
+                        placeholder="{{ t.search_placeholder }}"
+                        x-model="query"
+                        @input="search()"
+                        @focus="open = query.length > 0"
+                        @keydown.enter.prevent="go()"
+                        @keydown.escape="clear()"
+                    >
+                    <button type="button" class="search-clear" x-show="query.length > 0" x-cloak @click="clear()" aria-label="Clear search">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                    </button>
+                    <div class="search-results" x-show="open && results.length" x-cloak>
+                        <div class="search-result-list">
+                            <template x-for="(r, i) in visibleResults" :key="r.url">
+                                <a :href="r.url" class="search-result-item" :class="{ 'is-selected': i === selected }">
+                                    <span class="search-result-icon" x-text="matchType(r) === 'title' ? '#' : '≡'"></span>
+                                    <span class="search-result-text">
+                                        <span class="search-result-title" x-html="highlight(r.title)"></span>
+                                        <span class="search-result-summary" x-text="r.summary"></span>
+                                    </span>
+                                </a>
+                            </template>
+                        </div>
+                        <template x-if="results.length > visibleResults.length">
+                            <a href="#" class="search-see-all" @click.prevent="showAll = true">
+                                {{ t.see_all_results }} (<span x-text="results.length"></span>)
+                            </a>
+                        </template>
+                    </div>
+                    <div class="search-results" x-show="open && query.length > 0 && results.length === 0" x-cloak>
+                        <div class="search-no-results">{{ t.no_results }}</div>
+                    </div>
+                </div>
+                <a href="{{ SITEURL }}/blog/" @click="menuOpen=false">{{ t.blog_nav }}</a>
+                {% for title, link in MENUITEMS %}
+                <a href="{{ link }}" @click="menuOpen=false">{{ title }}</a>
+                {% endfor %}
+                {% for page in pages if page.metadata.get('nav') == 'true' %}
+                <a href="{{ SITEURL }}/{{ page.url }}" @click="menuOpen=false">{{ page.title }}</a>
+                {% endfor %}
+            </div>
+        </div>
+    </header>
+
+    <main class="lk-main">
+        <div class="lk-container">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <footer class="lk-footer">
+        <div class="lk-container">
+            <div class="lk-footer-grid">
+                <div>
+                    <div class="lk-footer-heading">{{ SITENAME }}</div>
+                    <div class="lk-footer-links">
+                        <a href="{{ SITEURL }}/blog/">{{ t.blog_nav }}</a>
+                        <a href="{{ SITEURL }}/">На главную</a>
+                    </div>
+                </div>
+                <div>
+                    <div class="lk-footer-heading">Community</div>
+                    <div class="lk-footer-links">
+                        {% for title, link in SOCIAL %}
+                        <a href="{{ link }}">{{ title }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div>
+                    <div class="lk-footer-heading">More</div>
+                    <div class="lk-footer-links">
+                        {% for title, link in LINKS %}
+                        <a href="{{ link }}">{{ title }}</a>
+                        {% endfor %}
+                        <a href="{{ SITEURL }}/blog/cookie-policy/">{{ t.cookie_policy }}</a>
+                        <button type="button" data-cc="show-preferencesModal">{{ t.cookie_settings }}</button>
+                    </div>
+                </div>
+            </div>
+            <div class="lk-footer-bottom">
+                © {{ CURRENT_YEAR }} {{ SITENAME }} · Data &amp; AI Engineering · Работаем из Франции 🇫🇷
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // "Copy page as Markdown" buttons (see partials/ai_actions.html).
+        document.addEventListener('click', function (event) {
+            var btn = event.target.closest('.js-copy-markdown');
+            if (!btn) return;
+
+            var label = btn.closest('.ai-actions').querySelector('.js-ai-actions-label');
+            var resetLabel = label ? label.textContent : null;
+
+            fetch(btn.dataset.mdUrl)
+                .then(function (r) {
+                    if (!r.ok) throw new Error('Fetch failed: ' + r.status);
+                    return r.text();
+                })
+                .then(function (text) { return navigator.clipboard.writeText(text); })
+                .then(function () {
+                    if (label) label.textContent = {{ t.copied|tojson }};
+                })
+                .catch(function (err) {
+                    console.error('Copy as Markdown failed', err);
+                    if (label) label.textContent = {{ t.copy_failed|tojson }};
+                })
+                .finally(function () {
+                    if (label) setTimeout(function () { label.textContent = resetLabel; }, 1800);
+                });
+        });
+    </script>
+    <script type="module" src="{{ SITEURL }}/theme/js/cookieconsent-config.js"></script>
+</body>
+</html>

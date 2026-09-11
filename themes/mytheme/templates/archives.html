@@ -1,0 +1,15 @@
+{% extends "blog_base.html" %}
+
+{% block title %}{{ t.archives_title }} — {{ SITENAME }}{% endblock %}
+
+{% block blog_content %}
+<h1 class="page-title">{{ t.archives_title }}</h1>
+<ul class="sidebar-list" style="font-size: 15px;">
+    {% for article in dates %}
+    <li style="margin-bottom: var(--space-2);">
+        <span class="post-meta" style="display:inline;">{{ article.locale_date }}</span> —
+        <a href="{{ SITEURL }}/{{ article.url }}" class="index-link">{{ article.title }}</a>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

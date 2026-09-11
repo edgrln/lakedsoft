@@ -1,0 +1,118 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+**Keep this file current as you work.** Whenever a change adds or alters a build-time convention future work would need to know about — a new signal-based generator in `pelicanconf.py`, a new `PLUGINS`/`STATIC_PATHS`/`EXTRA_PATH_METADATA` entry, a new dependency, a new template/partial wiring pattern — update the relevant section here (or add one) in the same change, not as a separate follow-up. Don't wait to be asked.
+
+## What this is
+
+A [Pelican](https://getpelican.com) (Python static site generator) project for **Lakedsoft** (lakedsoft.com — data & AI engineering). Content is written in Markdown, rendered through a custom theme (`themes/mytheme`), and the built `output/` is deployed as a static site.
+
+The brand is **Lakedsoft** — Cormorant Garamond (headings) + Lora (body) over a light "paper" ground, a single gold accent (`#b68235`) used only as strokes/underlines/outlined buttons, hairline dividers, no shadows/gradients. The brand mark (a triangle over a water-line, in a circle) and its 4 SVG variants live in `themes/mytheme/static/brand/`. Design tokens (colors, fonts, spacing, radius) live in `themes/mytheme/static/css/classical.css` — an unmodified copy of a third-party "Classical" design-system stylesheet; **take every color/font/space/radius value from its `--color-*`/`--font-*`/`--space-*`/`--radius-*` variables and its `.btn`/`.card`/`.tag`/`.dialog`/`.field`/`.table` classes, never hard-code a hex or px value it already carries.** `landing-brand.css` (landing-only) and `blog.css` (blog-only) each layer their own brand primitives (`.brand` lockup, dark colophon footer) and page-specific layout on top — see "Theme structure" below for why they don't share a file.
+
+The site has two independent parts that never share templates:
+- **Site root** (`/`) — a Pelican `Page` rendered through its own standalone template (`landing.html`), hand-authored, entirely separate from the blog theme (see below).
+- **`/blog/`** — everything else Pelican generates (articles, tags, categories, authors, search index) via `themes/mytheme`.
+
+The site is **single-language (Russian)**. It used to be multi-language (EN default + FR/DE/ES) via Pelican's native translation mechanism; that infrastructure was removed when the site was rebranded to Lakedsoft and rewritten in Russian — see "Single-language site (history)" below before assuming any `Lang:`/translation machinery still exists.
+
+## Commands
+
+```bash
+pip install -r requirements.txt      # pelican, markdown, pelican-sitemap — the only real deps
+
+make html        # one-off build with pelicanconf.py -> output/
+make devserver   # build + watch + serve at http://localhost:8000 (edit-reload loop)
+make serve       # serve an already-built output/ without regenerating
+make publish     # production build with publishconf.py -> output/ (absolute URLs, feeds on)
+make clean       # rm -rf output/
+
+# equivalent raw commands (what devserver/publish wrap):
+pelican content -o output -s pelicanconf.py    # dev config, SITEURL=""
+pelican content -o output -s publishconf.py    # prod config, SITEURL="https://lakedsoft.com"
+```
+
+There is no lint/test suite in this repo. `DELETE_OUTPUT_DIRECTORY = True`, so `output/` is wiped and fully regenerated on every build — never hand-edit files under `output/`, they don't survive the next build.
+
+`make devserver`'s autoreload (`pelican -lr`) spawns Python `multiprocessing` worker processes for the watcher/server; killing the top-level `make`/`pelican` process (e.g. a plain `kill <pid>`) does **not** reliably kill those workers — they can be reparented and keep rebuilding `output/` in the background indefinitely (visible as unkillable-looking file changes, or a stale `output/` that "reappears" after `rm -rf`). If a devserver restart seems stuck, check `ps aux` / `lsof -iTCP:8000` for leftover `multiprocessing.spawn_main`/`resource_tracker` Python processes (not just the `pelican` process itself) and kill those too before starting a new one.
+
+**NOTE:** `publishconf.py`'s `SITEURL` is `https://lakedsoft.com`, but this assumes lakedsoft.com's DNS/CNAME is actually pointed at this deployment — that hasn't been verified/set up as of the Lakedsoft rebrand. Until it is, a production build's canonical URLs/sitemap/OG image links point at a domain that may not resolve yet.
+
+Deployment is automatic: `.github/workflows/gh-pages.yml` runs `pelican content -o output -s publishconf.py` on every push to `main`/`master` and publishes `output/` to GitHub Pages. `make github` (local `ghp-import` to a `gh-pages` branch) is an older/alternate path defined in the Makefile but not what CI uses.
+
+## Architecture
+
+### URL scheme is centralized in `pelicanconf.py`
+
+Every content type is deliberately routed under `blog/...` (`ARTICLE_URL`, `ARTICLE_SAVE_AS`, `TAG_URL`, `CATEGORY_URL`, `AUTHOR_URL`, `INDEX_SAVE_AS`, etc. are all overridden away from Pelican's defaults). The site root path is reserved for the static landing page. When adding any new content type/URL, follow this `blog/{...}` convention rather than Pelican's defaults.
+
+### The landing page is a real Page, but with its own document shell
+
+The landing page is a real Pelican `Page` (`content/pages/landing.html` + `themes/mytheme/templates/landing.html`), but it deliberately does **not** extend `themes/mytheme/templates/base.html` — it has its own full `<head>`/`<body>` shell instead (still on the same Classical brand system as the blog, just its own copy of the CSS - see "Theme structure" below).
+
+The split, and why it's shaped this way: Pelican's built-in `HTMLReader` (used for `.html` content files) only extracts `<title>` and `<meta name="...">` from `<head>`, and everything between `<body>`/`</body>` — it silently drops everything else in `<head>` (so raw `<style>` blocks, CDN `<script src>` tags, font links can't live in the content file) and it discards attributes on the `<body>` tag itself (so anything that has to be on `<body>`, like Alpine's root `x-data`/`x-init` scope, can't live in the content file either). Given that:
+- `themes/mytheme/templates/landing.html` holds the whole document shell: `<head>` (Google Fonts preconnect, `classical.css` + `landing-brand.css`, cookie-consent CSS/theming, OG/Twitter meta, favicon), the `<body class="lk-page" x-data="{...}">` opening tag (this is where the page's Alpine root scope - mobile menu state, contact form - lives), then `{{ page.content|safe }}`, then the trailing footer `<script>` tags before `</body></html>`.
+- `content/pages/landing.html` holds just what used to be *inside* `<body>` (header/nav, hero, services, stack, process, contact modal, FAQ, footer), plus a small metadata `<head>` using Pelican's HTML-page convention (`<meta name="save_as" content="index.html">`, `<meta name="url" content="">`, `<meta name="template" content="landing">`) to route it to `output/index.html` via the `landing` template instead of the blog's default `PAGE_URL`/`PAGE_SAVE_AS` pattern.
+
+`ARTICLE_EXCLUDES` includes `'pages'` for a non-obvious reason: `ARTICLE_PATHS` defaults to `[""]`, so Pelican's `ArticlesGenerator` walks *all* of `content/`, including `content/pages/` — without the exclude, `landing.html` gets picked up as both an Article and a Page and they race to write `output/index.html`.
+
+Because `content/pages/landing.html` is raw HTML (not run through Jinja), asset references inside it must be literal paths, not `{{ SITEURL }}` — it uses root-relative paths like `/theme/brand/lakedsoft-mark.svg` (works under both dev's empty `SITEURL` and prod's absolute one, since the output tree under `theme/...` is identical either way).
+
+Two more root-level files ride along via `STATIC_PATHS`/`EXTRA_PATH_METADATA` (unrelated to the Page above — these are still verbatim-copied static files, not Pelican content):
+- `content/extra/favicon.ico` — a duplicate of `themes/mytheme/static/img/favicon.ico`, kept only so `/favicon.ico` exists at the domain root (browsers fall back to fetching that path for tabs with no `<link rel="icon">` to read, e.g. the raw-text `blog/{slug}.md` mirrors below). Both copies were regenerated from `themes/mytheme/static/brand/lakedsoft-favicon.svg` (rendered via headless Chrome, packed to multi-size `.ico` via Pillow — there's no SVG→ICO CLI tool in this environment) as part of the Lakedsoft rebrand; regenerate both together if the mark ever changes.
+- `content/extra/index.md` — a **hand-written** Markdown summary of the landing page (services, stack, process, contact), linked from `llms.txt`. It is *not* auto-derived from `content/pages/landing.html`: that page has no clean text to extract (nav markup is legitimately duplicated for responsive reasons, and the FAQ copy lives inside `<details>` elements mixed with layout markup). Update it by hand when the pitch changes materially.
+
+The landing page's contact `mailto:` (and the blog's `CTA_BUTTON_LINK`/`CTA_FOOTNOTE` in `pelicanconf.py`) is `info@lakedsoft.com`. Note Cloudflare's Email Address Obfuscation rewrites any plain `mailto:` into a `data-cfemail="..."` blob at the edge on every response (once the site is actually served through Cloudflare) — seeing that in a live `curl`/view-source is expected, not a sign the address reverted; decode it (XOR each byte with the first byte) to check what it actually points at.
+
+### Theme structure (`themes/mytheme/`)
+
+- `templates/base.html` — full HTML shell (header/nav, search widget, footer, global `<script>` blocks) used by every Pelican-rendered blog page. No dark/light theme toggle (the Classical brand system is a single light "paper" theme, no dark tokens defined).
+- `templates/blog_base.html` — extends `base.html`, adds the year-grouped sidebar of all posts; everything under `/blog/` extends this, not `base.html` directly.
+- `templates/article.html`, `page.html`, `category.html`, `tag.html`, `author.html`, `authors.html`, `archives.html`, `index.html`, `404.html` — extend `blog_base.html` (`page.html` extends `base.html` directly, no sidebar).
+- `templates/partials/` — small includes pulled into article pages: `author_card.html`, `cta.html` (driven by the `CTA_*` settings in `pelicanconf.py`), `ai_actions.html` (see below).
+- `templates/search.html` — a `DIRECT_TEMPLATES` entry; the site has no server-side search, it's Alpine.js (in `base.html`, `siteSearch()`) that fetches `blog/search-index.json` (generated via `SEARCH_SAVE_AS`/`SEARCH_URL`, itself rendered by this same `search.html` template — it emits JSON, not an HTML page) and filters client-side.
+- `static/brand/` — the 4 Lakedsoft mark SVGs (`lakedsoft-mark.svg`, `lakedsoft-mark-dark.svg` for dark backgrounds like the footer, `lakedsoft-favicon.svg`, `lakedsoft-logo.svg` — a horizontal lockup, unused directly since both landing and blog build their own `.brand` markup instead) plus `lakedsoft-social.png` (the OG/Twitter share image). Pelican copies this whole tree to `output/theme/brand/...`.
+- `static/img/favicon.ico` — see `content/extra/favicon.ico` above; referenced as the `<link rel="alternate icon">` fallback behind the SVG favicon.
+- `static/css/classical.css` — the third-party design-system stylesheet (tokens + component classes), copied in verbatim; don't hand-edit it, replace the whole file if the upstream design system changes.
+- `static/css/landing-brand.css` — landing-only: `.brand` lockup, dark colophon footer, hero/section/grid layout. Loaded only by `templates/landing.html`.
+- `static/css/blog.css` — blog-only: its own copy of `.brand`/footer (small, deliberate duplication — see below), plus sidebar/article-prose/search-widget/AI-actions-menu/CTA-box layout. Loaded only by `templates/base.html`.
+- `static/js/cookieconsent-config.js` — vanilla-cookieconsent config, loaded as an ES module by both `base.html` and `landing.html`; single-language (`ru`) since the Lakedsoft rebrand — see "Single-language site (history)".
+
+**Why `landing-brand.css` and `blog.css` both define their own `.brand`/footer classes instead of sharing one file:** the landing page and the blog are documented above as never sharing templates; sharing a CSS file between them would create an implicit coupling the "never share templates" rule is meant to avoid. Both files build on the same `classical.css` tokens, so they stay visually identical without being the same file — if the brand lockup markup/CSS changes, change it in both.
+
+### Content authoring
+
+Markdown files in `content/` (flat, not `content/articles/`). Metadata is the classic Pelican `Key: value` header block terminated by a blank line (`Title`, `Date`, `Category`, `Author`, `Tags`, `Summary`, `Lang: ru`). `AUTHORS_INFO` in `pelicanconf.py` maps author names to avatar/title/social links used by `author_card.html` — a new author must be added there, not just in the article's `Author:` field, or the card renders without the extra info.
+
+### Single-language site (history: used to be EN + FR/DE/ES)
+
+The site is Russian-only (`DEFAULT_LANG = 'ru'`, every content file's `Lang:` metadata is `ru` or omitted). There is no `LANGUAGES`/`LANGUAGE_NAMES` dict, no language switcher in the nav, no `ARTICLE_LANG_URL`/`PAGE_LANG_URL` routing, and `UI_STRINGS` in `pelicanconf.py` (template chrome copy - nav/footer/buttons/etc., *not* content) is a **flat** dict rather than one nested per language - every template does `{% set t = UI_STRINGS %}` and reads `t.some_key` directly, no `current_lang` lookup needed.
+
+This used to be a full multi-language setup (EN default + FR/DE/ES via Pelican's *native* translation mechanism, not the `i18n_subsites` plugin - deliberately, since `i18n_subsites` runs a full nested `Pelican(...).run()` per language and would've made every custom generator below need "am I the main build or a subsite" guards). It was removed in the Lakedsoft rebrand (blog content rewritten in Russian; FR/DE/ES article/page translations and the standalone `landing-{lang}.html` files were deleted rather than translated). If the site needs another language again, reviving that pattern means:
+- Re-add `LANGUAGES`/`LANGUAGE_NAMES` dicts and nest `UI_STRINGS`/re-add a `CTA_STRINGS` override table back under language codes in `pelicanconf.py`.
+- Re-add `ARTICLE_LANG_URL`/`ARTICLE_LANG_SAVE_AS` and `PAGE_LANG_URL`/`PAGE_LANG_SAVE_AS` (pattern: `'{lang}/blog/{slug}/'`) - Pelican's `Content.get_url_setting()` automatically looks for these whenever `page.lang`/`article.lang` != `DEFAULT_LANG`.
+- Re-add the `_expose_translations_to_context`/`_write_lang_blog_indexes` generator pair (was: exposes `article_generator.translations` to the Jinja context since Pelican's `articles` context var only holds one canonical item per slug group, then hand-renders a `/{lang}/blog/` index per non-default language from a dedicated `blog_index_lang.html` template - there's no built-in `INDEX_LANG_SAVE_AS` equivalent).
+- Re-add a `current_lang` resolution (`current_lang` in context, else `article.lang`/`page.lang`, else `DEFAULT_LANG`) and per-language nav/footer language-switcher UI in `base.html`/`landing.html`.
+- Give the landing page a translated copy per language again (its own `<meta name="save_as"/"url">` + matching `<meta name="slug" content="landing">` to link as a translation - the pattern the old `landing-fr.html`/etc. used).
+- Widen `_write_llms_txt` back to loop over `LANGUAGES` (was: one Homepage entry per language under `## Site`, one `## Blog`/`## Blog ({LANG})` section per language).
+- tags/categories/archives/authors listing pages were never localized even in the old multi-language setup (a known v1 scope boundary) - widening that is a new pattern, not a revival.
+
+### Generated machine-readable mirrors (`pelicanconf.py`, bottom half)
+
+Three custom generators are wired up via `pelican.signals.article_generator_finalized` directly inside `pelicanconf.py` (no separate plugin package/folder for these — they're plain functions + `_signals.connect(...)` calls at module scope):
+
+- `_write_markdown_mirrors` — for every article `blog/{slug}/index.html`, also writes a sibling `.md` containing the raw Markdown body (metadata block stripped) plus a short source/date header. This is what the "Copy page as Markdown" article button, `llms.txt`, and the ChatGPT/Claude/Perplexity links in `ai_actions.html` all point at.
+- `_write_llms_txt` — writes `output/llms.txt` at the site root, following the [llmstxt.org](https://llmstxt.org) format: `# title` / `> summary`, a `## Site` section linking `content/extra/index.md`, then a `## Blog` section with `- [title](md_url): desc` for every article.
+- `_write_robots_txt` — writes a minimal `output/robots.txt` (`Disallow:` = allow everything) pointing `Sitemap:` at `sitemap.xml`. The domain is proxied through Cloudflare, which was observed serving its own "Content Signals" boilerplate text at that path *only as a fallback* when origin had no `robots.txt` at all — once this file exists, Cloudflare passes it through untouched.
+
+`sitemap.xml` itself comes from the real 3rd-party `pelican-sitemap` plugin, pinned via `PLUGINS = ['sitemap']` and `SITEMAP = {...}` (both in `pelicanconf.py`) rather than left to Pelican's auto-discovery — leaving `PLUGINS` unset makes Pelican auto-load *any* installed `pelican.plugins.*` package, which previously caused `sitemap.xml` to appear in local dev (because `pelican-sitemap` happened to be pip-installed there) while being silently absent from the real CI build (`requirements.txt` didn't have it). Pin new plugins in both `PLUGINS` and `requirements.txt` together, never rely on auto-discovery.
+
+All three run automatically on every build (dev and publish) — no extra command needed. If article URL/save-as conventions in `pelicanconf.py` change, the `_os.path.dirname(article.save_as) + '.md'` path derivation used by more than one of these functions needs to change with them.
+
+### `ai_actions.html` partial
+
+Renders a per-article dropdown ("Copy page as Markdown" / "View as Markdown" / "Open in ChatGPT" / "Open in Claude" / "Open in Perplexity"), included from `article.html`. It's a plain Alpine.js `x-show` dropdown (`x-data="{ open: false }"`), not a Bootstrap component — the theme has no Bootstrap dependency. The clipboard-copy behavior is a delegated click handler in `base.html` (`.js-copy-markdown`), not in the partial itself — keep the two in sync if either is renamed. The ChatGPT/Claude/Perplexity links only pre-fill a prompt referencing the article's `.md` URL; they don't guarantee the target service fetches it (depends on that service's browsing being enabled).
+
+### Social-share previews (`og:image` etc.)
+
+`base.html` (all Pelican-rendered pages) sets `og:*`/`twitter:*` meta tags itself. The image picked is: on an article page, the first `<img>` found in `article.content` via the `first_image` Jinja filter (`_first_image` in `pelicanconf.py`, a small regex over the rendered HTML, resolving a relative `src` against `SITEURL`); otherwise — article has no image, or it's a non-article page (`/blog/` index, tag/category/author/archives, a plain `Page` like Cookie Policy, 404, search) — the same `theme/brand/lakedsoft-social.png` the landing page uses (`landing.html` sets its own `og:image` independently, since it doesn't extend `base.html`). If article URL conventions or the markdown renderer's `<img>` output shape change, check `_first_image`'s regex still matches.

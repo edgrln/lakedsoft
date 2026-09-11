@@ -1,0 +1,59 @@
+{% extends "blog_base.html" %}
+
+{% block blog_content %}
+<h1 class="page-title">{{ t.latest_posts }}</h1>
+
+{% set next_url = (SITEURL ~ '/' ~ articles_next_page.url) if articles_page.has_next() else '' %}
+<div x-data="infiniteScroll('{{ next_url }}')" x-init="init()">
+    <div id="post-list" x-ref="postList">
+        {% for article in articles_page.object_list %}
+        <article class="post-item">
+            <h2><a class="article-title-link" href="{{ SITEURL }}/{{ article.url }}">{{ article.title }}</a></h2>
+            <p class="post-meta">{{ article.locale_date }}</p>
+
+            {% if article.authors %}
+                <div class="authors-row">
+                {% for a in article.authors %}
+                    {% set author_name = a %}
+                    {% include "partials/author_card.html" with context %}
+                {% endfor %}
+                </div>
+            {% elif article.author %}
+                {% set author_name = article.author %}
+                {% include "partials/author_card.html" with context %}
+            {% endif %}
+
+            <p class="post-summary">{{ article.summary }}</p>
+
+            {% if article.tags %}
+            <div class="tags-row">
+                {% for tag in article.tags %}
+                <a href="{{ SITEURL }}/{{ tag.url }}" class="tag-pill">{{ tag }}</a>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <a href="{{ SITEURL }}/{{ article.url }}" class="btn btn-secondary">{{ t.read_more }}</a>
+        </article>
+        {% endfor %}
+    </div>
+
+    <div id="pagination-data" data-next-url="{{ next_url }}" hidden></div>
+
+    <div x-show="loading" x-cloak class="text-center" style="padding: var(--space-4) 0; color: var(--color-muted);">{{ t.loading_more }}</div>
+    <div x-ref="sentinel"></div>
+
+    <noscript>
+        {% if articles_page.has_other_pages() %}
+        <nav aria-label="Page navigation" style="display:flex; gap: var(--space-3); margin-top: var(--space-4);">
+            {% if articles_page.has_previous() %}
+            <a class="btn btn-secondary" href="{{ SITEURL }}/{{ articles_previous_page.url }}">{{ t.previous }}</a>
+            {% endif %}
+            {% if articles_page.has_next() %}
+            <a class="btn btn-secondary" href="{{ SITEURL }}/{{ articles_next_page.url }}">{{ t.next }}</a>
+            {% endif %}
+        </nav>
+        {% endif %}
+    </noscript>
+</div>
+{% endblock %}

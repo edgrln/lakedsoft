@@ -1,0 +1,28 @@
+{% extends "blog_base.html" %}
+
+{% block title %}{{ author }} — {{ SITENAME }}{% endblock %}
+
+{% block blog_content %}
+{% set author_name = author %}
+{% include "partials/author_card.html" with context %}
+
+<h2 class="page-title" style="margin-top: var(--space-6);">{{ t.posts_heading }}</h2>
+{% for article in articles %}
+<article class="post-item">
+    <h2><a class="article-title-link" href="{{ SITEURL }}/{{ article.url }}">{{ article.title }}</a></h2>
+    <p class="post-meta">{{ article.locale_date }}</p>
+
+    <p class="post-summary">{{ article.summary }}</p>
+
+    {% if article.tags %}
+    <div class="tags-row">
+        {% for tag in article.tags %}
+        <a href="{{ SITEURL }}/{{ tag.url }}" class="tag-pill">{{ tag }}</a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <a href="{{ SITEURL }}/{{ article.url }}" class="btn btn-secondary">{{ t.read_more }}</a>
+</article>
+{% endfor %}
+{% endblock %}
