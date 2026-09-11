@@ -5,12 +5,13 @@ SITEURL = ""
 # machine-readable summaries of the site.
 SITE_DESCRIPTION = "Практические статьи и разборы по data- и AI-инжинирингу."
 
-# Google Tag Manager container ID. Empty here (dev) on purpose - set for
-# real in publishconf.py only, so `make devserver`/local testing doesn't
-# report hits into GTM. Read directly as {{ GTM_ID }} in base.html/
+# Google Analytics 4 Measurement ID (direct gtag.js, no Tag Manager
+# container involved). Empty here (dev) on purpose - set for real in
+# publishconf.py only, so `make devserver`/local testing doesn't report
+# hits into GA. Read directly as {{ GA_MEASUREMENT_ID }} in base.html/
 # landing.html (no JINJA_GLOBALS needed - Pelican exposes all settings to
 # templates automatically).
-GTM_ID = ''
+GA_MEASUREMENT_ID = ''
 
 PATH = "content"
 

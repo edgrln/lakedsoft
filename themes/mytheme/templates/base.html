@@ -6,14 +6,15 @@
     <!-- Cookie consent (vanilla-cookieconsent) - loaded before GTM so
          Google Consent Mode defaults are set before any tag can fire. -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanilla-cookieconsent@3/dist/cookieconsent.css">
-    {% if GTM_ID %}
+    {% if GA_MEASUREMENT_ID %}
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         // Google Consent Mode v2 defaults: deny analytics/ads storage until
         // the visitor actually accepts via the cookie banner (see
         // theme/js/cookieconsent-config.js, which calls gtag('consent',
-        // 'update', ...) from CookieConsent's onFirstConsent/onChange).
+        // 'update', ...) from CookieConsent's onFirstConsent/onChange). Set
+        // before gtag.js loads below, per Google's own ordering guidance.
         gtag('consent', 'default', {
             'ad_storage': 'denied',
             'ad_user_data': 'denied',
@@ -21,13 +22,13 @@
             'analytics_storage': 'denied'
         });
     </script>
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','{{ GTM_ID }}');</script>
-    <!-- End Google Tag Manager -->
+    <!-- Google Analytics 4 (direct gtag.js - no Tag Manager container) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ GA_MEASUREMENT_ID }}"></script>
+    <script>
+        gtag('js', new Date());
+        gtag('config', '{{ GA_MEASUREMENT_ID }}');
+    </script>
+    <!-- End Google Analytics 4 -->
     {% endif %}
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -234,13 +235,6 @@
     {% endif %}
 </head>
 <body class="lk-page">
-    {% if GTM_ID %}
-    <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ GTM_ID }}"
-    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-    <!-- End Google Tag Manager (noscript) -->
-    {% endif %}
-
     <header class="lk-header" x-data="{ menuOpen: false }">
         <div class="lk-container lk-header-inner">
             <a href="{{ SITEURL }}/" class="brand">
