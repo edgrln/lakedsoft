@@ -221,6 +221,7 @@ JINJA_FILTERS = {"tojson": _json.dumps}
 # of having to parse the HTML page.
 import os as _os
 import re as _re
+from html.parser import HTMLParser as _HTMLParser
 
 # --- og:image / twitter:image support ---------------------------------
 # base.html uses this to pick an article's social-share image: the first
@@ -299,6 +300,211 @@ def _write_markdown_mirrors(article_generator):
             f.write(header + body)
 
 
+# --- Markdown mirrors for standalone landing pages -------------------------
+# Same idea as _write_markdown_mirrors above, but for the raw-HTML `Page`
+# family documented in CLAUDE.md ("A second standalone landing page:
+# /data-ai/") - those pages have no clean Markdown source to copy (they're
+# hand-authored HTML: header/nav, hero, cards, contact-form modal, footer),
+# so the mirror has to be built by parsing the rendered markup and keeping
+# only the "pitch" - headings, paragraphs, service-card/FAQ text - while
+# dropping chrome that would otherwise leak in as noise: the header/footer
+# (nav links duplicated 2-3x), the contact-form modal (field labels, the
+# honeypot input, the Turnstile widget, the submit button's spinner text),
+# CTA buttons ("Написать нам →" reads as a floating non-sequitur outside
+# its button), SVG icons (no text anyway), and the quiet
+# .lk-hero-secondary cross-link line (chrome, not pitch).
+#
+# _LANDING_MIRROR_TEMPLATES is the opt-in list: only pages whose
+# `template` metadata is in this set get a mirror written. The root
+# landing page ('landing') is deliberately excluded - its Markdown
+# representation is content/extra/index.md (hand-written, copied to
+# output/index.md via STATIC_PATHS; see pelicanconf.py's STATIC_PATHS
+# comment) - the dirname(save_as)+'.md' scheme below would collide with
+# that file for a page saved at the site root (dirname('index.html') is
+# '', giving a nonsensical '.md' path), so root is out of scope here by
+# design, not oversight. Add a new template name here when another
+# standalone landing page (beyond /data-ai/) should get an auto mirror.
+_LANDING_MIRROR_TEMPLATES = {'data-ai'}
+
+_MAIN_RE = _re.compile(r'<main\b[^>]*>(.*)</main>', _re.DOTALL)
+_SVG_RE = _re.compile(r'<svg\b.*?</svg>', _re.DOTALL)
+_BUTTON_RE = _re.compile(r'<button\b.*?</button>', _re.DOTALL)
+_BTN_LINK_RE = _re.compile(r'<a\b[^>]*\bclass="[^"]*\bbtn\b[^"]*"[^>]*>.*?</a>', _re.DOTALL)
+_HERO_SECONDARY_RE = _re.compile(r'<p\b[^>]*\bclass="lk-hero-secondary"[^>]*>.*?</p>', _re.DOTALL)
+_HONEYPOT_RE = _re.compile(r'<input\b[^>]*\bclass="lk-honeypot"[^>]*/?>')
+
+
+def _strip_balanced_div(html, needle):
+    """Remove the first <div ...>...</div> block whose opening tag
+    contains `needle` (e.g. a class name), correctly skipping over <div>
+    tags nested inside it rather than stopping at the first </div> -
+    which is what makes this safe for the contact-form modal
+    (.dialog-backdrop wraps a nested .dialog, which itself wraps several
+    .field divs) where a plain non-greedy regex would truncate the match
+    at the first inner </div> and leave the rest of the form dangling in
+    the output. Returns `html` unchanged if `needle` isn't found, or if
+    the markup turns out not to balance (safer to leave content in than
+    to risk mangling the page)."""
+    start = html.find(needle)
+    if start == -1:
+        return html
+    open_tag_start = html.rfind('<div', 0, start)
+    if open_tag_start == -1:
+        return html
+    pos = html.index('>', start) + 1
+    depth = 1
+    while depth > 0:
+        next_open = html.find('<div', pos)
+        next_close = html.find('</div>', pos)
+        if next_close == -1:
+            return html
+        if next_open != -1 and next_open < next_close:
+            depth += 1
+            pos = next_open + len('<div')
+        else:
+            depth -= 1
+            pos = next_close + len('</div>')
+    return html[:open_tag_start] + html[pos:]
+
+
+class _MainContentToMarkdown(_HTMLParser):
+    """Turns the pre-cleaned inner HTML of a landing page's <main> into
+    plain Markdown. Only a handful of tags/classes get special treatment
+    - h1-h4 become '#'..'####' headings, <div class="card-title"> is
+    promoted to a level-4 heading too (it's a service card's title, but
+    isn't a real heading tag), <summary> (an FAQ question) is bolded,
+    and <span class="tag ..."> pills are comma-joined into one line.
+    Everything else's text just flows through as a plain paragraph in
+    document order - deliberately not trying to reconstruct bullet
+    lists/tables for every card/step/stat shape, since the caller has
+    already stripped the actual noise (see the regexes and
+    _strip_balanced_div above) and a plain paragraph per block reads
+    fine for an LLM/search-index consumer even without perfect nesting."""
+
+    _HEADING_LEVEL = {'h1': 1, 'h2': 2, 'h3': 3, 'h4': 4}
+    _BLOCK_TAGS = {'div', 'section', 'p', 'details', 'li', 'ul', 'ol'}
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.blocks = []
+        self._buf = []
+        self._heading_level = None
+        self._in_summary = False
+
+    @staticmethod
+    def _classes(attrs):
+        for name, value in attrs:
+            if name == 'class':
+                return (value or '').split()
+        return []
+
+    def _flush(self):
+        text = _collapse_ws(''.join(self._buf))
+        # Whitespace text nodes between adjacent tag pills (e.g.
+        # "<span>A</span>\n  <span>B</span>") land in the buffer before
+        # the ", " separator inserted in handle_starttag, so collapsing
+        # runs of whitespace above still leaves "A , B" - tidy that up.
+        text = _re.sub(r'\s+,', ',', text)
+        self._buf = []
+        if not text:
+            return
+        if self._heading_level:
+            self.blocks.append('#' * self._heading_level + ' ' + text)
+        elif self._in_summary:
+            self.blocks.append('**' + text + '**')
+        else:
+            self.blocks.append(text)
+
+    def handle_starttag(self, tag, attrs):
+        if tag in self._HEADING_LEVEL:
+            self._flush()
+            self._heading_level = self._HEADING_LEVEL[tag]
+        elif tag == 'div' and 'card-title' in self._classes(attrs):
+            self._flush()
+            self._heading_level = 4
+        elif tag == 'summary':
+            self._flush()
+            self._in_summary = True
+        elif tag == 'span' and self._buf and _collapse_ws(''.join(self._buf)):
+            # A tag pill after an earlier one in the same group - join
+            # with a comma instead of letting them run together.
+            self._buf.append(', ')
+        elif tag in self._BLOCK_TAGS:
+            self._flush()
+
+    def handle_endtag(self, tag):
+        if tag in self._HEADING_LEVEL or (tag == 'div' and self._heading_level == 4):
+            self._flush()
+            self._heading_level = None
+        elif tag == 'summary':
+            self._flush()
+            self._in_summary = False
+        elif tag in self._BLOCK_TAGS:
+            self._flush()
+
+    def handle_data(self, data):
+        self._buf.append(data)
+
+    def close(self):
+        super().close()
+        self._flush()
+
+
+def _page_body_to_markdown(rendered_html):
+    """Extract just the <main> content of a rendered landing page and
+    convert it to plain Markdown, dropping the chrome described above.
+    Returns '' if the page has no <main> (shouldn't happen for a page
+    using this family's document shell - see CLAUDE.md)."""
+    match = _MAIN_RE.search(rendered_html)
+    if not match:
+        return ''
+    main_html = match.group(1)
+    main_html = _strip_balanced_div(main_html, 'class="dialog-backdrop"')
+    main_html = _SVG_RE.sub('', main_html)
+    main_html = _BUTTON_RE.sub('', main_html)
+    main_html = _BTN_LINK_RE.sub('', main_html)
+    main_html = _HERO_SECONDARY_RE.sub('', main_html)
+    main_html = _HONEYPOT_RE.sub('', main_html)
+
+    parser = _MainContentToMarkdown()
+    parser.feed(main_html)
+    parser.close()
+    return '\n\n'.join(parser.blocks) + '\n'
+
+
+def _write_page_markdown_mirrors(page_generator, writer=None):
+    # Connected to page_writer_finalized (not page_generator_finalized,
+    # which fires from generate_context() *before* generate_output() has
+    # written anything) because this reads each page's already-rendered
+    # output/{page.save_as} HTML off disk - see CLAUDE.md's markdown-
+    # mirrors section for why (the raw content file has no clean
+    # Markdown to copy the way an article's source .md does; the
+    # rendered HTML is what actually has the header/footer/contact-modal
+    # chrome removed by page_body_to_markdown, so it has to run after
+    # the real write, not before it).
+    site_url = page_generator.settings.get('SITEURL', '') or ''
+    for page in page_generator.pages:
+        if page.metadata.get('template') not in _LANDING_MIRROR_TEMPLATES:
+            continue
+
+        out_path = _os.path.join(page_generator.output_path, page.save_as)
+        if not _os.path.exists(out_path):
+            continue
+        with open(out_path, encoding='utf-8') as f:
+            rendered_html = f.read()
+
+        body = _page_body_to_markdown(rendered_html)
+        canonical = f"{site_url}/{page.url}" if site_url else f"/{page.url}"
+        header = f"# {page.title}\n\n> Source: {canonical}\n\n"
+
+        # data-ai/index.html -> data-ai.md
+        md_relpath = _os.path.dirname(page.save_as) + '.md'
+        md_path = _os.path.join(page_generator.output_path, md_relpath)
+        _os.makedirs(_os.path.dirname(md_path) or '.', exist_ok=True)
+        with open(md_path, 'w', encoding='utf-8') as f:
+            f.write(header + body)
+
+
 def _collapse_ws(text):
     return _re.sub(r'\s+', ' ', text or '').strip()
 
@@ -372,6 +578,7 @@ from pelican import signals as _signals
 _signals.article_generator_finalized.connect(_write_markdown_mirrors)
 _signals.article_generator_finalized.connect(_write_llms_txt)
 _signals.article_generator_finalized.connect(_write_robots_txt)
+_signals.page_writer_finalized.connect(_write_page_markdown_mirrors)
 # NOTE: no manual sitemap injection for the homepage anymore - now that
 # content/pages/landing.html is a real Pelican Page (see STATIC_PATHS
 # comment above), it fires `content_written` on its own like any other
