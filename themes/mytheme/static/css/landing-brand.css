@@ -99,6 +99,61 @@
 .lk-nav a:hover { color: var(--color-accent); }
 .lk-nav-toggle { display: none; }
 
+/* — nav: cross-segment pages (a second landing page for another
+   audience, e.g. /data-ai/) are real page links, not in-page scroll
+   anchors like Услуги/Стек/Процесс/Контакты above them - give them a
+   visible break instead of blending into the anchor list. With only
+   one sibling page right now, both landing.html and data-ai.html just
+   use a plain `.lk-nav-divider` + single link; .lk-nav-more/
+   .lk-nav-more-trigger/.lk-nav-more-menu below are a dropdown variant
+   (same plain Alpine x-show idiom as blog.css's .ai-actions-menu) kept
+   around unused for when a second sibling page exists again and a
+   flat list of links would get crowded - mobile's equivalent is
+   .lk-mobile-nav-group (divider, optionally a small
+   .lk-mobile-nav-label when there's more than one link in the group).
+   Add a new segment page's nav link inside
+   .lk-nav-more-menu / .lk-mobile-nav-group, not next to the anchors. */
+.lk-nav-divider { width: 1px; height: 18px; background: var(--color-divider); }
+
+.lk-nav-more { position: relative; }
+.lk-nav-more-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-family: var(--font-body);
+  color: var(--color-text);
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+.lk-nav-more-trigger:hover { color: var(--color-accent); }
+.lk-nav-more-trigger svg { transition: transform 0.15s ease; }
+.lk-nav-more-trigger[aria-expanded="true"] svg { transform: rotate(180deg); }
+
+.lk-nav-more-menu {
+  position: absolute;
+  top: calc(100% + 14px);
+  right: 0;
+  min-width: 220px;
+  z-index: 30;
+  background: var(--color-bg);
+  border: 1px solid var(--color-divider);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: 6px;
+}
+.lk-nav-more-menu a {
+  display: block;
+  padding: 8px 10px;
+  font-size: 14px;
+  color: var(--color-text);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+}
+.lk-nav-more-menu a:hover { background: color-mix(in srgb, var(--color-accent) 10%, transparent); color: var(--color-accent-700); }
+
 .lk-mobile-nav {
   display: flex;
   flex-direction: column;
@@ -107,6 +162,20 @@
   border-top: 1px solid var(--color-divider);
 }
 .lk-mobile-nav a { font-size: 15px; color: var(--color-text); text-decoration: none; }
+
+.lk-mobile-nav-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-divider);
+}
+.lk-mobile-nav-label {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-muted, #57544e);
+}
 
 @media (max-width: 860px) {
   .lk-nav-links, .lk-nav .btn { display: none; }
@@ -165,6 +234,22 @@
 }
 .lk-hero-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-bottom: var(--space-8); }
 .lk-hero-actions .btn { font-size: 15px; padding: 12px 22px; }
+
+/* Secondary hero link (e.g. landing.html's "Решения для экспертов и
+   медиа" link to experts/) - deliberately quiet: muted color, no button
+   chrome, smaller than .lk-lede - so it never competes with the primary
+   .btn-primary CTA above it. */
+.lk-hero-secondary {
+  margin-top: calc(-1 * var(--space-6));
+  margin-bottom: var(--space-6);
+  font-size: 14px;
+}
+.lk-hero-secondary a {
+  color: var(--color-muted, #57544e);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.lk-hero-secondary a:hover { color: var(--lk-accent-deep); }
 
 .lk-stats {
   display: grid;
