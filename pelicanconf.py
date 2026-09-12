@@ -381,24 +381,31 @@ class _MainContentToMarkdown(_HTMLParser):
     plain Markdown. Only a handful of tags/classes get special treatment
     - h1-h4 become '#'..'####' headings, <div class="card-title"> is
     promoted to a level-4 heading too (it's a service card's title, but
-    isn't a real heading tag), <summary> (an FAQ question) is bolded,
-    and <span class="tag ..."> pills are comma-joined into one line.
-    Everything else's text just flows through as a plain paragraph in
-    document order - deliberately not trying to reconstruct bullet
-    lists/tables for every card/step/stat shape, since the caller has
-    already stripped the actual noise (see the regexes and
-    _strip_balanced_div above) and a plain paragraph per block reads
-    fine for an LLM/search-index consumer even without perfect nesting."""
+    isn't a real heading tag), <summary> (an FAQ question) and
+    <div class="lk-stack-label"> (a stack category like "Хранение") are
+    bolded, <div class="lk-kicker"/"lk-step-num"> (a section's small
+    overline, or a process step's "01") are italicized so they read as
+    a label rather than a stray sentence in front of the heading/step
+    that follows, and <span class="tag ..."> pills are comma-joined
+    into one line. Everything else's text just flows through as a
+    plain paragraph in document order - deliberately not trying to
+    reconstruct bullet lists/tables for every card/step/stat shape,
+    since the caller has already stripped the actual noise (see the
+    regexes and _strip_balanced_div above) and a plain paragraph per
+    block reads fine for an LLM/search-index consumer even without
+    perfect nesting."""
 
     _HEADING_LEVEL = {'h1': 1, 'h2': 2, 'h3': 3, 'h4': 4}
     _BLOCK_TAGS = {'div', 'section', 'p', 'details', 'li', 'ul', 'ol'}
+    _EM_CLASSES = {'lk-kicker', 'lk-step-num'}
+    _STRONG_CLASSES = {'lk-stack-label'}
 
     def __init__(self):
         super().__init__(convert_charrefs=True)
         self.blocks = []
         self._buf = []
         self._heading_level = None
-        self._in_summary = False
+        self._style = None  # None | 'strong' | 'em'
 
     @staticmethod
     def _classes(attrs):
@@ -419,21 +426,30 @@ class _MainContentToMarkdown(_HTMLParser):
             return
         if self._heading_level:
             self.blocks.append('#' * self._heading_level + ' ' + text)
-        elif self._in_summary:
+        elif self._style == 'strong':
             self.blocks.append('**' + text + '**')
+        elif self._style == 'em':
+            self.blocks.append('*' + text + '*')
         else:
             self.blocks.append(text)
 
     def handle_starttag(self, tag, attrs):
+        classes = self._classes(attrs) if tag == 'div' else ()
         if tag in self._HEADING_LEVEL:
             self._flush()
             self._heading_level = self._HEADING_LEVEL[tag]
-        elif tag == 'div' and 'card-title' in self._classes(attrs):
+        elif tag == 'div' and 'card-title' in classes:
             self._flush()
             self._heading_level = 4
+        elif tag == 'div' and self._EM_CLASSES.intersection(classes):
+            self._flush()
+            self._style = 'em'
+        elif tag == 'div' and self._STRONG_CLASSES.intersection(classes):
+            self._flush()
+            self._style = 'strong'
         elif tag == 'summary':
             self._flush()
-            self._in_summary = True
+            self._style = 'strong'
         elif tag == 'span' and self._buf and _collapse_ws(''.join(self._buf)):
             # A tag pill after an earlier one in the same group - join
             # with a comma instead of letting them run together.
@@ -445,9 +461,9 @@ class _MainContentToMarkdown(_HTMLParser):
         if tag in self._HEADING_LEVEL or (tag == 'div' and self._heading_level == 4):
             self._flush()
             self._heading_level = None
-        elif tag == 'summary':
+        elif tag == 'summary' or (tag == 'div' and self._style):
             self._flush()
-            self._in_summary = False
+            self._style = None
         elif tag in self._BLOCK_TAGS:
             self._flush()
 
