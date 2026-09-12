@@ -222,6 +222,8 @@ JINJA_FILTERS = {"tojson": _json.dumps}
 import os as _os
 import re as _re
 from html.parser import HTMLParser as _HTMLParser
+from pelican.generators import ArticlesGenerator as _ArticlesGenerator
+from pelican.generators import PagesGenerator as _PagesGenerator
 
 # --- og:image / twitter:image support ---------------------------------
 # base.html uses this to pick an article's social-share image: the first
@@ -315,16 +317,23 @@ def _write_markdown_mirrors(article_generator):
 # .lk-hero-secondary cross-link line (chrome, not pitch).
 #
 # _LANDING_MIRROR_TEMPLATES is the opt-in list: only pages whose
-# `template` metadata is in this set get a mirror written. The root
-# landing page ('landing') is deliberately excluded - its Markdown
-# representation is content/extra/index.md (hand-written, copied to
-# output/index.md via STATIC_PATHS; see pelicanconf.py's STATIC_PATHS
-# comment) - the dirname(save_as)+'.md' scheme below would collide with
-# that file for a page saved at the site root (dirname('index.html') is
-# '', giving a nonsensical '.md' path), so root is out of scope here by
-# design, not oversight. Add a new template name here when another
-# standalone landing page (beyond /data-ai/) should get an auto mirror.
-_LANDING_MIRROR_TEMPLATES = {'data-ai'}
+# `template` metadata is a key here get a mirror written - the value is
+# a short one-line description used for that page's entry in
+# llms.txt's "## Site" section (Page objects have no Summary: metadata
+# convention the way articles do, so there's nothing to derive one
+# from automatically). The root landing page ('landing') is
+# deliberately excluded - its Markdown representation is
+# content/extra/index.md (hand-written, copied to output/index.md via
+# STATIC_PATHS; see pelicanconf.py's STATIC_PATHS comment) - the
+# dirname(save_as)+'.md' scheme below would collide with that file for
+# a page saved at the site root (dirname('index.html') is '', giving a
+# nonsensical '.md' path), so root is out of scope here by design, not
+# oversight. Add a new template name here when another standalone
+# landing page (beyond /data-ai/) should get an auto mirror and an
+# llms.txt entry.
+_LANDING_MIRROR_TEMPLATES = {
+    'data-ai': 'B2B pitch: data pipelines, BI, and AI solutions on Google Cloud.',
+}
 
 _MAIN_RE = _re.compile(r'<main\b[^>]*>(.*)</main>', _re.DOTALL)
 _SVG_RE = _re.compile(r'<svg\b.*?</svg>', _re.DOTALL)
@@ -518,10 +527,28 @@ def _plain_summary(article):
     return _collapse_ws(_re.sub(r'<[^>]+>', '', raw))
 
 
-def _write_llms_txt(article_generator):
+def _write_llms_txt(generators):
     """Write an /llms.txt index (per the llmstxt.org convention) listing
-    every article/landing page and its Markdown mirror, so LLM tools can
-    discover and fetch the site's content without scraping HTML."""
+    every standalone landing page and article, plus their Markdown
+    mirrors, so LLM tools can discover and fetch the site's content
+    without scraping HTML.
+
+    Connected to all_generators_finalized rather than
+    article_generator_finalized: this needs both
+    ArticlesGenerator.articles and PagesGenerator.pages (to list
+    /data-ai/ etc. alongside the blog), and the two generators'
+    generate_context() calls aren't guaranteed to run in a particular
+    order relative to each other, so article_generator_finalized alone
+    can't promise PagesGenerator.pages is populated yet.
+    all_generators_finalized fires once every generator's context phase
+    has completed - still before any HTML is written, which is fine
+    here since only save_as/url/title metadata is needed, not rendered
+    content (this used to be article-only, so a page like /data-ai/
+    never showed up here at all - only /index.md via the hardcoded
+    Homepage line below)."""
+    article_generator = next(g for g in generators if isinstance(g, _ArticlesGenerator))
+    page_generator = next(g for g in generators if isinstance(g, _PagesGenerator))
+
     settings = article_generator.settings
     site_url = settings.get('SITEURL', '') or ''
     site_name = settings.get('SITENAME', '')
@@ -533,10 +560,17 @@ def _write_llms_txt(article_generator):
     lines = [
         f"# {site_name}", "", f"> {description}", "",
         "## Site", "",
-        f"- [Homepage]({url_for('index.md')}): Services, tech stack, process and contact.",
-        "",
-        "## Blog", "",
+        f"- [Homepage]({url_for('index.md')}): AI assistants, Telegram ecosystems, and digital-presence architecture for online experts and small businesses.",
     ]
+    for page in page_generator.pages:
+        page_desc = _LANDING_MIRROR_TEMPLATES.get(page.metadata.get('template'))
+        if page_desc is None:
+            continue
+        md_relpath = _os.path.dirname(page.save_as) + '.md'
+        lines.append(f"- [{page.title}]({url_for(md_relpath)}): {page_desc}")
+    lines.append("")
+    lines.append("## Blog")
+    lines.append("")
 
     articles = sorted(article_generator.articles, key=lambda a: a.date, reverse=True)
     for article in articles:
@@ -576,7 +610,7 @@ def _write_robots_txt(article_generator):
 
 from pelican import signals as _signals
 _signals.article_generator_finalized.connect(_write_markdown_mirrors)
-_signals.article_generator_finalized.connect(_write_llms_txt)
+_signals.all_generators_finalized.connect(_write_llms_txt)
 _signals.article_generator_finalized.connect(_write_robots_txt)
 _signals.page_writer_finalized.connect(_write_page_markdown_mirrors)
 # NOTE: no manual sitemap injection for the homepage anymore - now that
