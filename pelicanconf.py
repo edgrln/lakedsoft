@@ -204,8 +204,10 @@ EXTRA_PATH_METADATA = {
 }
 # Article source files live under content/blog/ (not flat in content/ -
 # that grew cluttered as soon as an article needed colocated assets, e.g.
-# content/blog/2026-09-14/ below bundles a post with its diagram SVGs so
-# {attach} can find them). ARTICLE_PATHS defaults to [""], meaning
+# content/blog/2026-09-14-agent-memory-framework/ below bundles a post with
+# its diagram SVGs so {attach} can find them - the folder name is
+# {date}-{slug}, not just the date, so same-day articles never collide).
+# ARTICLE_PATHS defaults to [""], meaning
 # Pelican's ArticlesGenerator otherwise walks the *entire* content/ tree,
 # including content/pages/ and content/extra/ - scoping it to 'blog' here
 # means those never need excluding: without this, content/pages/landing.html
