@@ -202,13 +202,16 @@ EXTRA_PATH_METADATA = {
     'extra/index.md': {'path': 'index.md'},
     'extra/favicon.ico': {'path': 'favicon.ico'},
 }
-# Keep the article/page generators from also trying to parse content/extra
-# (the static passthrough files above) as blog content. ARTICLE_PATHS
-# defaults to [""] - i.e. Pelican's ArticlesGenerator walks the *entire*
-# content/ tree, including content/pages/ - so 'pages' has to be excluded
-# here too, or content/pages/landing.html gets picked up as both an
-# Article and a Page and they race to write the same output/index.html.
-ARTICLE_EXCLUDES = ['extra', 'pages']
+# Article source files live under content/blog/ (not flat in content/ -
+# that grew cluttered as soon as an article needed colocated assets, e.g.
+# content/blog/2026-09-14/ below bundles a post with its diagram SVGs so
+# {attach} can find them). ARTICLE_PATHS defaults to [""], meaning
+# Pelican's ArticlesGenerator otherwise walks the *entire* content/ tree,
+# including content/pages/ and content/extra/ - scoping it to 'blog' here
+# means those never need excluding: without this, content/pages/landing.html
+# would get picked up as both an Article and a Page and they'd race to
+# write the same output/index.html.
+ARTICLE_PATHS = ['blog']
 PAGE_EXCLUDES = ['extra']
 
 import json as _json
