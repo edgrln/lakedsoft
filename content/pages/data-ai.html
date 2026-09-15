@@ -29,9 +29,9 @@
           <span class="lk-nav-divider" aria-hidden="true"></span>
           <a href="..">Для экспертов и медиа</a>
         </div>
-        <button type="button" @click="showContactForm = true; formStartedAt = Date.now()" class="btn btn-primary">
+        <a href="mailto:info@lakedapp.com?subject=%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81%20%D0%BF%D0%BE%20Data%20%26%20AI" class="btn btn-primary">
           Написать нам
-        </button>
+        </a>
 
         <button
           type="button"
@@ -65,14 +65,14 @@
         <div class="lk-mobile-nav-group">
           <a href=".." @click="menuOpen=false">Для экспертов и медиа</a>
         </div>
-        <button
-          type="button"
-          @click="menuOpen=false; showContactForm = true; formStartedAt = Date.now()"
+        <a
+          href="mailto:info@lakedapp.com?subject=%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81%20%D0%BF%D0%BE%20Data%20%26%20AI"
+          @click="menuOpen=false"
           class="btn btn-primary btn-block"
           style="width:fit-content; margin-top: 4px;"
         >
           Написать нам
-        </button>
+        </a>
       </div>
     </div>
   </header>
@@ -312,9 +312,9 @@
           </p>
 
           <div class="lk-hero-actions" style="justify-content:center; margin-bottom:0;">
-            <button type="button" @click="showContactForm = true; formStartedAt = Date.now()" class="btn btn-primary">
+            <a href="mailto:info@lakedapp.com?subject=%D0%92%D0%BE%D0%BF%D1%80%D0%BE%D1%81%20%D0%BF%D0%BE%20Data%20%26%20AI" class="btn btn-primary">
               Написать нам ✉
-            </button>
+            </a>
           </div>
 
           <div class="lk-cta-footnote">
@@ -323,70 +323,6 @@
         </div>
       </div>
     </section>
-
-    <!-- CONTACT MODAL -->
-    <div
-      x-show="showContactForm"
-      x-cloak
-      @keydown.escape.window="showContactForm = false"
-      class="dialog-backdrop"
-    >
-      <div
-        @click.away="showContactForm = false"
-        class="dialog"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="contact-dialog-title"
-      >
-        <div style="display:flex; align-items:flex-start; justify-content:space-between; gap: var(--space-3);">
-          <div>
-            <div class="lk-kicker" style="margin-bottom:6px;">Контакты</div>
-            <div class="dialog-title" id="contact-dialog-title">Написать нам</div>
-          </div>
-          <button type="button" @click="showContactForm = false" class="btn btn-icon btn-ghost" aria-label="Закрыть">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-          </button>
-        </div>
-
-        <form @submit.prevent="submitContact($event)">
-          <!-- Honeypot: hidden from real users, bots that auto-fill every input tend to fill it -->
-          <input
-            type="text"
-            name="company"
-            x-model="formData.company"
-            tabindex="-1"
-            autocomplete="off"
-            aria-hidden="true"
-            class="lk-honeypot"
-          />
-
-          <div class="lk-field field">
-            <label for="lk-name">Имя</label>
-            <input class="input" id="lk-name" name="name" x-model="formData.name" type="text" required />
-          </div>
-
-          <div class="lk-field field">
-            <label for="lk-email">Email</label>
-            <input class="input" id="lk-email" name="email" x-model="formData.email" type="email" required />
-          </div>
-
-          <div class="lk-field field">
-            <label for="lk-message">Сообщение</label>
-            <textarea class="input" id="lk-message" name="message" x-model="formData.message" required rows="5"></textarea>
-          </div>
-
-          <div class="cf-turnstile" data-sitekey="0x4AAAAAAEM7muzBPUFiEYFd" data-theme="light"></div>
-
-          <button type="submit" :disabled="submitting" class="btn btn-primary btn-block">
-            <span x-show="!submitting">Отправить</span>
-            <span x-show="submitting" x-cloak>Отправка…</span>
-          </button>
-
-          <p x-show="status" x-text="status" x-cloak style="color:#3a6b3a; font-size:13px; margin-top: var(--space-2);"></p>
-          <p x-show="error" x-text="error" x-cloak style="color:#a3372f; font-size:13px; margin-top: var(--space-2);"></p>
-        </form>
-      </div>
-    </div>
 
     <!-- FAQ -->
     <section class="lk-section">

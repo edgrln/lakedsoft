@@ -177,58 +177,10 @@
   <link rel="alternate icon" href="{{ SITEURL }}/theme/img/favicon.ico" type="image/x-icon" />
 
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
 <body
   class="lk-page"
-  x-data="{
-    menuOpen: false,
-    showContactForm: false,
-    formData: { name: '', email: '', message: '', company: '' },
-    formStartedAt: 0,
-    submitting: false,
-    status: '',
-    error: '',
-    async submitContact(evt) {
-      const SCRIPT_URL = '/api/contact';
-      this.error = '';
-      this.status = '';
-      this.submitting = true;
-
-      try {
-        const turnstileToken = evt.target.querySelector('[name=cf-turnstile-response]')?.value || '';
-
-        const body = new URLSearchParams({
-          ...this.formData,
-          startedAt: String(this.formStartedAt),
-          turnstileToken,
-        }).toString();
-
-        const res = await fetch(SCRIPT_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
-          },
-          body,
-        });
-
-        const data = await res.json().catch(() => ({}));
-
-        if (!res.ok || !data.ok) {
-          throw new Error(data.error || 'Request failed');
-        }
-
-        this.formData = { name: '', email: '', message: '', company: '' };
-        this.status = 'Сообщение отправлено. Спасибо!';
-      } catch (err) {
-        console.error(err);
-        this.error = 'Что-то пошло не так. Напишите нам напрямую на почту.';
-      } finally {
-        this.submitting = false;
-        if (window.turnstile) window.turnstile.reset();
-      }
-    }
-  }"
+  x-data="{ menuOpen: false }"
 >
 {{ page.content|safe }}
 

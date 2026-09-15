@@ -28,4 +28,4 @@
 
 ## Контакты
 
-[info@lakedapp.com](mailto:info@lakedapp.com) · Форма обратной связи — на [lakedapp.com](https://lakedapp.com/#contact) (кнопка «Запросить аудит»).
+Напишите нам на [info@lakedapp.com](mailto:info@lakedapp.com) — кнопки «Запросить аудит» на [lakedapp.com](https://lakedapp.com/) открывают почтовый клиент с этим адресом.

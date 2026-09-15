@@ -320,15 +320,16 @@ def _write_markdown_mirrors(article_generator):
 # Same idea as _write_markdown_mirrors above, but for the raw-HTML `Page`
 # family documented in CLAUDE.md ("A second standalone landing page:
 # /data-ai/") - those pages have no clean Markdown source to copy (they're
-# hand-authored HTML: header/nav, hero, cards, contact-form modal, footer),
-# so the mirror has to be built by parsing the rendered markup and keeping
-# only the "pitch" - headings, paragraphs, service-card/FAQ text - while
-# dropping chrome that would otherwise leak in as noise: the header/footer
-# (nav links duplicated 2-3x), the contact-form modal (field labels, the
-# honeypot input, the Turnstile widget, the submit button's spinner text),
-# CTA buttons ("Написать нам →" reads as a floating non-sequitur outside
-# its button), SVG icons (no text anyway), and the quiet
-# .lk-hero-secondary cross-link line (chrome, not pitch).
+# hand-authored HTML: header/nav, hero, cards, footer), so the mirror has
+# to be built by parsing the rendered markup and keeping only the "pitch"
+# - headings, paragraphs, service-card/FAQ text - while dropping chrome
+# that would otherwise leak in as noise: the header/footer (nav links
+# duplicated 2-3x), CTA buttons and mailto CTA links ("Написать нам →"
+# reads as a floating non-sequitur outside its button), SVG icons (no
+# text anyway), and the quiet .lk-hero-secondary cross-link line (chrome,
+# not pitch). Note the contact CTAs are plain `.btn` <a href="mailto:...">
+# links now (there used to be a JS contact-form modal here, stripped by a
+# hand-rolled balanced-<div> scanner) - _BTN_LINK_RE covers them.
 #
 # _LANDING_MIRROR_TEMPLATES is the opt-in list: only pages whose
 # `template` metadata is a key here get a mirror written - the value is
@@ -354,40 +355,6 @@ _SVG_RE = _re.compile(r'<svg\b.*?</svg>', _re.DOTALL)
 _BUTTON_RE = _re.compile(r'<button\b.*?</button>', _re.DOTALL)
 _BTN_LINK_RE = _re.compile(r'<a\b[^>]*\bclass="[^"]*\bbtn\b[^"]*"[^>]*>.*?</a>', _re.DOTALL)
 _HERO_SECONDARY_RE = _re.compile(r'<p\b[^>]*\bclass="lk-hero-secondary"[^>]*>.*?</p>', _re.DOTALL)
-_HONEYPOT_RE = _re.compile(r'<input\b[^>]*\bclass="lk-honeypot"[^>]*/?>')
-
-
-def _strip_balanced_div(html, needle):
-    """Remove the first <div ...>...</div> block whose opening tag
-    contains `needle` (e.g. a class name), correctly skipping over <div>
-    tags nested inside it rather than stopping at the first </div> -
-    which is what makes this safe for the contact-form modal
-    (.dialog-backdrop wraps a nested .dialog, which itself wraps several
-    .field divs) where a plain non-greedy regex would truncate the match
-    at the first inner </div> and leave the rest of the form dangling in
-    the output. Returns `html` unchanged if `needle` isn't found, or if
-    the markup turns out not to balance (safer to leave content in than
-    to risk mangling the page)."""
-    start = html.find(needle)
-    if start == -1:
-        return html
-    open_tag_start = html.rfind('<div', 0, start)
-    if open_tag_start == -1:
-        return html
-    pos = html.index('>', start) + 1
-    depth = 1
-    while depth > 0:
-        next_open = html.find('<div', pos)
-        next_close = html.find('</div>', pos)
-        if next_close == -1:
-            return html
-        if next_open != -1 and next_open < next_close:
-            depth += 1
-            pos = next_open + len('<div')
-        else:
-            depth -= 1
-            pos = next_close + len('</div>')
-    return html[:open_tag_start] + html[pos:]
 
 
 class _MainContentToMarkdown(_HTMLParser):
@@ -405,9 +372,8 @@ class _MainContentToMarkdown(_HTMLParser):
     plain paragraph in document order - deliberately not trying to
     reconstruct bullet lists/tables for every card/step/stat shape,
     since the caller has already stripped the actual noise (see the
-    regexes and _strip_balanced_div above) and a plain paragraph per
-    block reads fine for an LLM/search-index consumer even without
-    perfect nesting."""
+    regexes above) and a plain paragraph per block reads fine for an
+    LLM/search-index consumer even without perfect nesting."""
 
     _HEADING_LEVEL = {'h1': 1, 'h2': 2, 'h3': 3, 'h4': 4}
     _BLOCK_TAGS = {'div', 'section', 'p', 'details', 'li', 'ul', 'ol'}
@@ -498,12 +464,10 @@ def _page_body_to_markdown(rendered_html):
     if not match:
         return ''
     main_html = match.group(1)
-    main_html = _strip_balanced_div(main_html, 'class="dialog-backdrop"')
     main_html = _SVG_RE.sub('', main_html)
     main_html = _BUTTON_RE.sub('', main_html)
     main_html = _BTN_LINK_RE.sub('', main_html)
     main_html = _HERO_SECONDARY_RE.sub('', main_html)
-    main_html = _HONEYPOT_RE.sub('', main_html)
 
     parser = _MainContentToMarkdown()
     parser.feed(main_html)

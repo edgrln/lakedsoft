@@ -36,8 +36,13 @@
   color: var(--color-text);
   font-family: var(--font-body);
 }
-.lk-page a { color: var(--lk-accent-deep); text-underline-offset: 3px; }
-.lk-page a:hover { color: var(--lk-accent-deep-hover); }
+/* :not(.btn) throughout the link rules below: the contact CTAs are
+   <a class="btn btn-primary" href="mailto:..."> (they used to be <button>
+   elements opening a form modal), and these descendant selectors outrank
+   classical.css's single-class .btn-primary, which would repaint them in
+   the plain link/nav color. */
+.lk-page a:not(.btn) { color: var(--lk-accent-deep); text-underline-offset: 3px; }
+.lk-page a:not(.btn):hover { color: var(--lk-accent-deep-hover); }
 .lk-page ::selection { background: color-mix(in srgb, var(--color-accent) 30%, transparent); }
 
 .lk-container {
@@ -91,12 +96,12 @@
 
 .lk-nav { display: flex; align-items: center; gap: var(--space-6); }
 .lk-nav-links { display: flex; align-items: center; gap: var(--space-6); }
-.lk-nav a {
+.lk-nav a:not(.btn) {
   font-size: 14px;
   color: var(--color-text);
   text-decoration: none;
 }
-.lk-nav a:hover { color: var(--color-accent); }
+.lk-nav a:not(.btn):hover { color: var(--color-accent); }
 .lk-nav-toggle { display: none; }
 
 /* — nav: cross-segment pages (a second landing page for another
@@ -161,7 +166,7 @@
   padding: var(--space-3) 0 var(--space-4);
   border-top: 1px solid var(--color-divider);
 }
-.lk-mobile-nav a { font-size: 15px; color: var(--color-text); text-decoration: none; }
+.lk-mobile-nav a:not(.btn) { font-size: 15px; color: var(--color-text); text-decoration: none; }
 
 .lk-mobile-nav-group {
   display: flex;
@@ -392,11 +397,6 @@
   color: color-mix(in srgb, var(--color-text) 78%, transparent);
   max-width: 68ch;
 }
-
-/* — dialog form — */
-.dialog-backdrop { z-index: 60; }
-.lk-field { margin-bottom: var(--space-3); }
-.lk-honeypot { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 
 /* — footer / colophon (README.md "2. Подвал") — */
 .lk-footer {
