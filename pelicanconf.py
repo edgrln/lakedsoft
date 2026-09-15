@@ -28,8 +28,8 @@ AUTHORS_INFO = {
 CTA_TITLE = "Построим что-то стоящее"
 CTA_TEXT = "Опишите задачу — обсудим её напрямую, без продающих презентаций."
 CTA_BUTTON_TEXT = "Написать нам"
-CTA_BUTTON_LINK = "mailto:info@lakedsoft.com"
-CTA_FOOTNOTE = "info@lakedsoft.com · Удалённо по Европе"
+CTA_BUTTON_LINK = "mailto:info@lakedapp.com"
+CTA_FOOTNOTE = "info@lakedapp.com · Удалённо по Европе"
 
 TIMEZONE = 'Europe/Rome'
 
@@ -194,13 +194,22 @@ SEARCH_URL = "blog/search-index.json"
 # file with no clean text source to extract, e.g. the FAQ copy only exists
 # inside an Alpine `x-for` JS array). Keep it in sync by hand when the pitch
 # on the landing page changes materially.
+#
+# extra/CNAME copies to output/CNAME so GitHub Pages' custom domain
+# (lakedapp.com) survives every Actions-based deploy - without a CNAME file
+# physically in the published artifact, GitHub can silently drop the custom
+# domain setting on redeploy. Must stay in sync with SITEURL in
+# publishconf.py and the custom domain configured in the repo's Pages
+# settings.
 STATIC_PATHS = [
     'extra/index.md',
     'extra/favicon.ico',
+    'extra/CNAME',
 ]
 EXTRA_PATH_METADATA = {
     'extra/index.md': {'path': 'index.md'},
     'extra/favicon.ico': {'path': 'favicon.ico'},
+    'extra/CNAME': {'path': 'CNAME'},
 }
 # Article source files live under content/blog/ (not flat in content/ -
 # that grew cluttered as soon as an article needed colocated assets, e.g.

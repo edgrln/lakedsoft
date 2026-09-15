@@ -2,7 +2,7 @@ Title: Cookie Policy
 Slug: cookie-policy
 Lang: ru
 
-Эта страница объясняет, какие cookie использует lakedsoft.com, зачем, и как в любой момент изменить свой выбор.
+Эта страница объясняет, какие cookie использует lakedapp.com, зачем, и как в любой момент изменить свой выбор.
 
 ## Что такое cookie
 
@@ -40,4 +40,4 @@ Cookie — небольшие текстовые файлы, которые са
 
 ## Контакты
 
-Вопросы по этой политике: [info@lakedsoft.com](mailto:info@lakedsoft.com).
+Вопросы по этой политике: [info@lakedapp.com](mailto:info@lakedapp.com).

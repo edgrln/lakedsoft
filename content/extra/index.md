@@ -28,4 +28,4 @@
 
 ## Контакты
 
-[info@lakedsoft.com](mailto:info@lakedsoft.com) · Форма обратной связи — на [lakedsoft.com](https://lakedsoft.com/#contact) (кнопка «Запросить аудит»).
+[info@lakedapp.com](mailto:info@lakedapp.com) · Форма обратной связи — на [lakedapp.com](https://lakedapp.com/#contact) (кнопка «Запросить аудит»).
