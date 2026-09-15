@@ -1,5 +1,5 @@
 AUTHOR = 'Edgar L'
-SITENAME = 'Lakedsoft'
+SITENAME = 'LakedApp'
 SITEURL = ""
 # One-line description used in llms.txt (see bottom of this file) and other
 # machine-readable summaries of the site.

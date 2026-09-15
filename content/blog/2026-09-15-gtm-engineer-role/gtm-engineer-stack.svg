@@ -46,7 +46,7 @@
   <!-- Caption -->
   <text x="280" y="500" text-anchor="middle" font-size="12" fill="#605d5d" font-style="italic">Один стек, три слоя: от инфраструктуры к revenue-действию</text>
 
-  <!-- Lakedsoft credit mark -->
+  <!-- LakedApp credit mark -->
   <g transform="translate(300,510) scale(0.5)" opacity="0.55">
     <g transform="translate(3 3)">
       <circle cx="29" cy="29" r="28" stroke="#b68235" stroke-width="1.25" fill="none"/>
@@ -54,7 +54,7 @@
       <path d="M9 40 h12 M25 40 h9 M38 40 h11" stroke="#b68235" stroke-width="1.25" stroke-opacity="0.55"/>
       <path d="M18 34 l11 -17 l11 17" stroke="#201f1d" stroke-width="1.25" fill="none"/>
     </g>
-    <text x="82" y="36" font-family="Cormorant Garamond, Garamond, serif" font-size="40" fill="#201f1d">Lakedsoft</text>
+    <text x="82" y="36" font-family="Cormorant Garamond, Garamond, serif" font-size="40" fill="#201f1d">LakedApp</text>
     <text x="83" y="52" font-family="Lora, Georgia, serif" font-size="9" letter-spacing="2.7" fill="#57544e">SYSTEMS &amp; SOFTWARE</text>
   </g>
 </svg>
