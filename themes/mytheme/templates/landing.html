@@ -36,6 +36,8 @@
   <meta name="twitter:title" content="LakedApp для экспертов и медиа — ИИ-ассистенты и Telegram-экосистемы">
   <meta name="twitter:description" content="Связываем соцсети, сайт, ботов и ИИ-ассистентов в единую структуру, чтобы заявки обрабатывались автоматически.">
 
+  {# Same rule as base.html: index.html -> https://lakedapp.com/ #}
+  <link rel="canonical" href="{{ SITEURL }}/{{ output_file[:-10] if output_file.endswith('index.html') else output_file }}">
   <title>LakedApp для экспертов и медиа — ИИ-ассистенты и Telegram-экосистемы</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">

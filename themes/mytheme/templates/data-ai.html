@@ -36,6 +36,8 @@
   <meta name="twitter:title" content="LakedApp — Data &amp; AI Engineering">
   <meta name="twitter:description" content="Дата- и AI-инжиниринг: надёжные пайплайны, BI и AI-решения на Google Cloud.">
 
+  {# Same rule as base.html: data-ai/index.html -> https://lakedapp.com/data-ai/ #}
+  <link rel="canonical" href="{{ SITEURL }}/{{ output_file[:-10] if output_file.endswith('index.html') else output_file }}">
   <title>LakedApp — Data &amp; AI Engineering</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">

@@ -37,6 +37,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
+    {# <link rel="canonical">: always the https:// URL of the file being
+       written (Pelican passes its path as `output_file`; a trailing
+       index.html becomes a directory URL), so Google doesn't treat the
+       http:// or query-string variants as separate duplicate pages. The 404
+       page has no canonical - it's served at arbitrary paths. #}
+    {% if output_file is defined and output_file != '404.html' %}
+    <link rel="canonical" href="{{ SITEURL }}/{{ output_file[:-10] if output_file.endswith('index.html') else output_file }}">
+    {% endif %}
+
     {# Social-share preview (og:image etc.): on an article page, use the
        first <img> found in the article's own body (see `first_image` in
        pelicanconf.py); otherwise - no image in that article, or this is a
