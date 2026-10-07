@@ -205,11 +205,14 @@ STATIC_PATHS = [
     'extra/index.md',
     'extra/favicon.ico',
     'extra/CNAME',
+    'extra/yandex_01ee8b5ce0dc9d9c.html',
 ]
 EXTRA_PATH_METADATA = {
     'extra/index.md': {'path': 'index.md'},
     'extra/favicon.ico': {'path': 'favicon.ico'},
     'extra/CNAME': {'path': 'CNAME'},
+    # Yandex Webmaster ownership check - must stay at the root, byte-for-byte.
+    'extra/yandex_01ee8b5ce0dc9d9c.html': {'path': 'yandex_01ee8b5ce0dc9d9c.html'},
 }
 # Article source files live under content/blog/ (not flat in content/ -
 # that grew cluttered as soon as an article needed colocated assets, e.g.
