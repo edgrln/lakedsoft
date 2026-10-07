@@ -6,6 +6,9 @@
 <div class="error-page">
     <div class="error-code">404</div>
     <p style="font-size: 17px; color: var(--color-muted); margin-bottom: var(--space-4);">{{ t.page_not_found }}</p>
-    <a href="{{ SITEURL }}/" class="btn btn-primary">{{ t.go_home }}</a>
+    <div style="display: flex; gap: var(--space-2); justify-content: center; flex-wrap: wrap;">
+        <a href="{{ SITEURL }}/" class="btn btn-primary">{{ t.go_home }}</a>
+        <a href="{{ SITEURL }}/blog/" class="btn btn-secondary">{{ t.go_blog }}</a>
+    </div>
 </div>
 {% endblock %}

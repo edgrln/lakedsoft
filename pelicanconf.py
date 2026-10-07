@@ -82,6 +82,7 @@ UI_STRINGS = {
     'posts_heading': 'Статьи',
     'page_not_found': 'Страница не найдена',
     'go_home': 'На главную',
+    'go_blog': 'В блог',
 }
 
 import datetime as _datetime
