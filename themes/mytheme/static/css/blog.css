@@ -158,8 +158,11 @@ h1, h2, h3 { letter-spacing: -0.01em; }
 }
 .sidebar-year { font-family: var(--font-heading); font-weight: 600; font-size: 15px; margin: var(--space-3) 0 var(--space-1); }
 .sidebar-list { list-style: none; margin: 0; padding: 0; }
-.sidebar-list li { margin-bottom: 4px; }
-.sidebar-link { color: color-mix(in srgb, var(--color-text) 78%, transparent); text-decoration: none; font-size: 14px; }
+/* Titles wrap to 2-3 lines, so items are separated by hairlines and the
+   leading inside a title is tighter than the gap between titles. */
+.sidebar-list li { padding: var(--space-2) 0; border-top: 1px solid var(--color-divider); }
+.sidebar-list li:first-child { border-top: 0; padding-top: 0; }
+.sidebar-link { display: block; line-height: 1.35; color: color-mix(in srgb, var(--color-text) 78%, transparent); text-decoration: none; font-size: 14px; }
 .sidebar-link:hover { color: var(--color-accent); }
 .sidebar-link.active { color: var(--color-accent-700); font-weight: 600; }
 
